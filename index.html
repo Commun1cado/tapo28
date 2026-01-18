@@ -5,18 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body { 
-  margin:0; padding:15px; 
+  margin:0; padding:10px; 
   background:url('tarot-bg.jpg') center/cover fixed; 
   font-family:system-ui; 
   display:flex; flex-direction:column; 
   align-items:center; justify-content:center; 
-  gap:25px; min-height:100vh;
+  gap:20px; min-height:100vh;
 }
 .grid { 
   display:grid; 
-  grid-template-columns:repeat(3, minmax(70px, 1fr)); 
-  gap:12px;
-  max-width:280px;
+  grid-template-columns:repeat(3, 1fr); 
+  gap:10px;
+  width:90vw;
+  max-width:400px;
 }
 .card { 
   width:100%; aspect-ratio:3/4.2;
@@ -33,12 +34,12 @@ body {
 }
 @media (min-width:600px) {
   .grid { 
-    grid-template-columns:repeat(3, 85px);
+    width:95vw;
+    max-width:500px;
     gap:15px;
-    max-width:none;
   }
   .card:hover { 
-    transform:translateY(-12px) scale(1.08); 
+    transform:translateY(-15px) scale(1.1); 
     box-shadow:0 20px 40px rgba(0,0,0,0.7);
   }
 }
