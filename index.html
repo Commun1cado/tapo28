@@ -98,12 +98,12 @@ body {
   0% {
     transform:scale(1) translateX(0) translateY(0);
     opacity:1;
-    z-index:1;
+    z-index:100;
   }
   100% {
-    transform:scale(0.6) translateX(var(--finalOffsetX, 0)) translateY(var(--finalOffsetY, 0));
+    transform:scale(1.2) translateX(var(--finalOffsetX, 0)) translateY(0);
     opacity:1;
-    z-index:1;
+    z-index:100;
   }
 }
 @keyframes fadeOut {
@@ -121,10 +121,10 @@ body {
   animation:moveBack 0.6s ease-in forwards;
 }
 .card-container.animate-final {
-  animation:finalArrange 0.8s ease-out forwards;
+  animation:finalArrange 0.6s ease-out forwards;
 }
 .card-container.fade-out {
-  animation:fadeOut 0.8s ease-out forwards;
+  animation:fadeOut 0.6s ease-out forwards;
 }
 @media (min-width:600px) {
   .title {
@@ -230,15 +230,14 @@ function calculateOffset(cardIndex, centerIndex = 4) {
 
 function finalArrangement() {
   const positions = [
-    { x: -120, y: 0 },
-    { x: 0, y: -80 },
-    { x: 120, y: 0 }
+    { x: -150 },
+    { x: 0 },
+    { x: 150 }
   ];
   
   selectedIndices.forEach((index, pos) => {
     const container = containers[index];
     container.style.setProperty('--finalOffsetX', `${positions[pos].x}px`);
-    container.style.setProperty('--finalOffsetY', `${positions[pos].y}px`);
     container.classList.add('animate-final');
   });
   
@@ -251,7 +250,7 @@ function finalArrangement() {
   
   setTimeout(() => {
     Telegram.WebApp.close();
-  }, 2300);
+  }, 3000);
 }
 
 function flipCard(cardEl, containerEl, index) {
