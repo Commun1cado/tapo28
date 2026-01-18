@@ -54,19 +54,16 @@ body {
   display:flex;
   align-items:center;
   justify-content:center;
-}
-.card-front {
-  background-image:url('cards/card-back.jpg');
-  background-size:contain;
-  background-repeat:no-repeat;
-  background-position:center;
-  background-color:transparent;
-}
-.card-back {
   background-size:cover;
   background-repeat:no-repeat;
   background-position:center;
-  background-color:transparent;
+}
+.card-front {
+  background-image:url('cards/card-back.jpg');
+  background-color:#2a1a4a;
+}
+.card-back {
+  background-color:#1a1a1a;
   transform:rotateY(180deg);
   box-shadow:inset 0 0 20px rgba(0,0,0,0.4);
 }
@@ -205,23 +202,27 @@ function flipCard(cardEl, containerEl, index) {
     const randomCard = getRandomCard();
     const backEl = cardEl.querySelector('.card-back');
     backEl.style.backgroundImage = `url('${randomCard}')`;
-    cardEl.classList.add('flipped');
     Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
     
-    const offset = calculateOffset(index, 4);
-    containerEl.style.setProperty('--centerOffsetX', `${offset.offsetX * 0.3}px`);
+    setTimeout(() => {
+      cardEl.classList.add('flipped');
+    }, 300);
     
-    containerEl.classList.add('animate-zoom');
+    setTimeout(() => {
+      const offset = calculateOffset(index, 4);
+      containerEl.style.setProperty('--centerOffsetX', `${offset.offsetX * 0.3}px`);
+      containerEl.classList.add('animate-zoom');
+    }, 300);
     
     setTimeout(() => {
       containerEl.classList.remove('animate-zoom');
       containerEl.classList.add('animate-back');
-    }, 800);
+    }, 1100);
     
     setTimeout(() => {
       containerEl.classList.remove('animate-back');
       cardEl.classList.remove('disabled');
-    }, 1400);
+    }, 1700);
   } else {
     cardEl.classList.remove('flipped');
     cardEl.classList.remove('disabled');
