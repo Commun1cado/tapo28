@@ -96,14 +96,12 @@ body {
 }
 @keyframes finalArrange {
   0% {
-    transform:scale(1) translateX(0) translateY(0);
+    transform:scale(1) translateX(0);
     opacity:1;
-    z-index:100;
   }
   100% {
-    transform:scale(1.2) translateX(var(--finalOffsetX, 0)) translateY(0);
+    transform:scale(1.3) translateX(var(--finalOffsetX));
     opacity:1;
-    z-index:100;
   }
 }
 @keyframes fadeOut {
@@ -121,7 +119,16 @@ body {
   animation:moveBack 0.6s ease-in forwards;
 }
 .card-container.animate-final {
-  animation:finalArrange 0.6s ease-out forwards;
+  animation:finalArrange 0.8s ease-out forwards;
+  position:fixed !important;
+  top:50% !important;
+  left:50% !important;
+  width:120px !important;
+  height:200px !important;
+  margin:0 !important;
+  margin-top:-100px !important;
+  margin-left:calc(-60px + var(--finalOffsetX)) !important;
+  transform-origin:center !important;
 }
 .card-container.fade-out {
   animation:fadeOut 0.6s ease-out forwards;
@@ -229,19 +236,14 @@ function calculateOffset(cardIndex, centerIndex = 4) {
 }
 
 function finalArrangement() {
-  const positions = [
-    { x: -150 },
-    { x: 0 },
-    { x: 150 }
-  ];
+  const offsets = [-140, 0, 140];
   
   selectedIndices.forEach((index, pos) => {
     const container = containers[index];
-    container.style.setProperty('--finalOffsetX', `${positions[pos].x}px`);
+    container.style.setProperty('--finalOffsetX', `${offsets[pos]}px`);
     container.classList.add('animate-final');
   });
   
-  // Скрыть остальные карты
   containers.forEach((container, index) => {
     if (!selectedIndices.includes(index)) {
       container.classList.add('fade-out');
