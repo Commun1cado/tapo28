@@ -46,19 +46,16 @@ body {
   display:flex;
   align-items:center;
   justify-content:center;
-}
-.card-front {
-  background-image:url('cards/card-back.jpg');
   background-size:contain;
   background-repeat:no-repeat;
   background-position:center;
   background-color:transparent;
 }
+.card-front {
+  background-image:url('cards/card-back.jpg');
+}
 .card-back {
-  background-size:contain;
-  background-repeat:no-repeat;
-  background-position:center;
-  background-color:rgba(255,255,255,0.95);
+  background-image:url('cards/00-TheFool.jpg');
   transform:rotateY(180deg);
 }
 @media (min-width:600px) {
@@ -83,92 +80,6 @@ body {
 <div class="grid" id="grid"></div>
 
 <script>
-// ВСЕ 78 КАРТ ТАРО
 const allCards = [
-  // Старшие Арканы (22)
   'cards/00-TheFool.jpg', 'cards/01-TheMagician.jpg', 'cards/02-TheHighPriestess.jpg',
-  'cards/03-TheEmpress.jpg', 'cards/04-TheEmperor.jpg', 'cards/05-TheHierophant.jpg',
-  'cards/06-TheLovers.jpg', 'cards/07-TheChariot.jpg', 'cards/08-Strength.jpg',
-  'cards/09-TheHermit.jpg', 'cards/10-WheelOfFortune.jpg', 'cards/11-Justice.jpg',
-  'cards/12-TheHangedMan.jpg', 'cards/13-Death.jpg', 'cards/14-Temperance.jpg',
-  'cards/15-TheDevil.jpg', 'cards/16-TheTower.jpg', 'cards/17-TheStar.jpg',
-  'cards/18-TheMoon.jpg', 'cards/19-TheSun.jpg', 'cards/20-Judgement.jpg',
-  'cards/21-TheWorld.jpg',
-  // Кубки (14)
-  'cards/Cups01.jpg', 'cards/Cups02.jpg', 'cards/Cups03.jpg', 'cards/Cups04.jpg',
-  'cards/Cups05.jpg', 'cards/Cups06.jpg', 'cards/Cups07.jpg', 'cards/Cups08.jpg',
-  'cards/Cups09.jpg', 'cards/Cups10.jpg', 'cards/Cups11.jpg', 'cards/Cups12.jpg',
-  'cards/Cups13.jpg', 'cards/Cups14.jpg',
-  // Пентакли (14)
-  'cards/Pentacles01.jpg', 'cards/Pentacles02.jpg', 'cards/Pentacles03.jpg', 'cards/Pentacles04.jpg',
-  'cards/Pentacles05.jpg', 'cards/Pentacles06.jpg', 'cards/Pentacles07.jpg', 'cards/Pentacles08.jpg',
-  'cards/Pentacles09.jpg', 'cards/Pentacles10.jpg', 'cards/Pentacles11.jpg', 'cards/Pentacles12.jpg',
-  'cards/Pentacles13.jpg', 'cards/Pentacles14.jpg',
-  // Мечи (14)
-  'cards/Swords01.jpg', 'cards/Swords02.jpg', 'cards/Swords03.jpg', 'cards/Swords04.jpg',
-  'cards/Swords05.jpg', 'cards/Swords06.jpg', 'cards/Swords07.jpg', 'cards/Swords08.jpg',
-  'cards/Swords09.jpg', 'cards/Swords10.jpg', 'cards/Swords11.jpg', 'cards/Swords12.jpg',
-  'cards/Swords13.jpg', 'cards/Swords14.jpg',
-  // Жезлы (14)
-  'cards/Wands01.jpg', 'cards/Wands02.jpg', 'cards/Wands03.jpg', 'cards/Wands04.jpg',
-  'cards/Wands05.jpg', 'cards/Wands06.jpg', 'cards/Wands07.jpg', 'cards/Wands08.jpg',
-  'cards/Wands09.jpg', 'cards/Wands10.jpg', 'cards/Wands11.jpg', 'cards/Wands12.jpg',
-  'cards/Wands13.jpg', 'cards/Wands14.jpg'
-];
-
-const grid = document.getElementById('grid');
-
-// Создаём 9 рубашек
-for (let i = 0; i < 9; i++) {
-  const container = document.createElement('div');
-  container.className = 'card-container';
-  
-  const card = document.createElement('div');
-  card.className = 'card';
-  
-  const front = document.createElement('div');
-  front.className = 'card-front';
-  
-  const back = document.createElement('div');
-  back.className = 'card-back';
-  
-  card.appendChild(front);
-  card.appendChild(back);
-  container.appendChild(card);
-  
-  container.onclick = () => flipCard(card, back);
-  grid.appendChild(container);
-}
-
-function getRandomCard() {
-  return allCards[Math.floor(Math.random() * allCards.length)];
-}
-
-function flipCard(cardEl, backEl) {
-  if (cardEl.classList.contains('disabled')) return;
-  
-  cardEl.classList.add('disabled');
-  
-  if (!cardEl.classList.contains('flipped')) {
-    const randomCard = getRandomCard();
-    backEl.style.backgroundImage = `url('${randomCard}')`;
-    cardEl.classList.add('flipped');
-    Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
-  } else {
-    cardEl.classList.remove('flipped');
-  }
-  
-  setTimeout(() => cardEl.classList.remove('disabled'), 600);
-}
-
-Telegram.WebApp.ready();
-Telegram.WebApp.expand();
-
-Telegram.WebApp.MainButton.text = '🔮 Новое гадание';
-Telegram.WebApp.MainButton.color = '#6a0dad';
-Telegram.WebApp.MainButton.textColor = 'white';
-Telegram.WebApp.MainButton.onClick(() => location.reload());
-Telegram.WebApp.MainButton.show();
-</script>
-</body>
-</html>
+  'cards/03-TheEmpress.jpg', 'cards/04-TheEmperor.jpg', 'cards/05-TheHierophant.jpg
