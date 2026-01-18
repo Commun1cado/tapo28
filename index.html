@@ -357,9 +357,6 @@ function flipCard(cardEl, containerEl, index) {
 }
 
 submitBtn.onclick = () => {
-  const message = `🔮 Ваше гадание:\n\n${selectedCards.map((card, i) => `${i + 1}. ${card}`).join('\n')}`;
-  
-  Telegram.WebApp.sendData(message);
   Telegram.WebApp.close();
 };
 
