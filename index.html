@@ -4,66 +4,71 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 body { 
-  margin:0; padding:20px; 
-  background:#f5f5f0; 
+  margin:0; padding:40px 20px 60px; 
+  background:linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); 
   font-family:system-ui; 
   display:flex; flex-direction:column; 
-  align-items:center; gap:30px; 
+  align-items:center; justify-content:center; 
   min-height:100vh;
 }
-.row { display:flex; gap:15px; justify-content:center; }
+.arc { 
+  display:flex; flex-wrap:wrap; 
+  justify-content:center; gap:8px; 
+  max-width:400px; margin:0 auto;
+  transform:perspective(500px) rotateX(10deg);
+}
 .card { 
-  width:75px; height:110px; 
+  width:70px; height:100px; 
   background-image:url('card-back.jpg'); 
-  background-size:cover; 
-  border-radius:10px; cursor:pointer; 
-  box-shadow:0 6px 20px rgba(0,0,0,0.3);
-  transition:transform 0.3s, box-shadow 0.3s;
-  position:relative;
+  background-size:cover; border-radius:12px; 
+  cursor:pointer; box-shadow:0 8px 25px rgba(0,0,0,0.6);
+  transition:transform 0.4s ease, box-shadow 0.4s ease;
+  position:relative; border:2px solid rgba(255,255,255,0.2);
 }
 .card:hover { 
-  transform:translateY(-10px) scale(1.05); 
-  box-shadow:0 12px 30px rgba(0,0,0,0.4);
+  transform:translateY(-15px) scale(1.1) rotateY(5deg) !important; 
+  box-shadow:0 20px 40px rgba(0,0,0,0.8);
+  z-index:10;
 }
+.card:nth-child(1) { order:3; transform:translateY(-20px); }
+.card:nth-child(2) { order:2; transform:translateY(-10px); }
+.card:nth-child(3) { order:1; }
+.card:nth-child(4) { order:4; transform:translateY(5px); }
+.card:nth-child(5) { order:5; transform:translateY(10px); }
 .card::after {
   content:attr(data-num); 
-  position:absolute; bottom:6px; right:6px; 
-  color:rgba(255,255,255,0.9); 
-  font-size:11px; font-weight:bold; text-shadow:1px 1px 2px rgba(0,0,0,0.5);
+  position:absolute; top:4px; right:4px; 
+  background:rgba(0,0,0,0.7); color:white; 
+  padding:2px 6px; border-radius:10px; 
+  font-size:10px; font-weight:bold;
 }
 </style>
 </head>
 <body>
-<div class="row">
+<div class="arc">
   <div class="card" data-num="1" onclick="select(1)"></div>
-  <div class="row">
-    <div class="card" data-num="2" onclick="select(2)"></div>
-    <div class="card" data-num="3" onclick="select(3)"></div>
-    <div class="card" data-num="4" onclick="select(4)"></div>
-  </div>
-  <div class="row">
-    <div class="card" data-num="5" onclick="select(5)"></div>
-    <div class="card" data-num="6" onclick="select(6)"></div>
-    <div class="card" data-num="7" onclick="select(7)"></div>
-  </div>
+  <div class="card" data-num="2" onclick="select(2)"></div>
+  <div class="card" data-num="3" onclick="select(3)"></div>
+  <div class="card" data-num="4" onclick="select(4)"></div>
+  <div class="card" data-num="5" onclick="select(5)"></div>
+</div>
 
 <script>
 const predictions = {
-  1: '⭐ Звезда: Успех сияет',
-  2: '🌙 Луна: Интуиция ведёт', 
-  3: '☀️ Солнце: Радость впереди',
-  4: '⚡ Колесница: Победа твоя',
-  5: '👑 Император: Сила внутри',
-  6: '💕 Влюблённые: Сердце знает',
-  7: '🔄 Смерть: Новое начинается'
+  1: 'Звезда: Судьба на твоей стороне',
+  2: 'Луна: Интуиция не обманет', 
+  3: 'Солнце: Светлые перемены',
+  4: 'Колесница: Вперед к победе',
+  5: 'Император: Власть над судьбой'
 };
-Telegram.WebApp.ready(); Telegram.WebApp.expand(); Telegram.WebApp.themeParams;
+Telegram.WebApp.ready(); Telegram.WebApp.expand();
 function select(n) {
-  Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
-  Telegram.WebApp.showAlert('Твоя карта #' + n + ':\n\n' + predictions[n]);
+  Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+  Telegram.WebApp.showAlert('Карта #' + n + ':\n\n' + predictions[n]);
 }
-Telegram.WebApp.MainButton.text = 'Новое раскладывание'; 
-Telegram.WebApp.MainButton.color = '#0088cc';
+Telegram.WebApp.MainButton.text = 'Выбрать 3 карты'; 
+Telegram.WebApp.MainButton.color = '#533483';
+Telegram.WebApp.MainButton.textColor = 'white';
 Telegram.WebApp.MainButton.onClick(() => location.reload());
 Telegram.WebApp.MainButton.show();
 </script>
