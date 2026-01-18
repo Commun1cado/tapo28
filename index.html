@@ -133,11 +133,11 @@ body {
   animation:moveBack 0.6s ease-in forwards;
 }
 
-/* Финальный ряд точно по центру второй карты второго ряда */
+/* Финальный ряд точно по центру второй карты второго ряда - сдвиг влево */
 .final-row-wrapper {
   position:fixed;
-  top: 50%; /* Точно по вертикальному центру сетки */
-  left: 50%;
+  top: 50%;
+  left: calc(50% - 15px); /* Сдвиг влево для точного центрирования по горизонтали */
   transform: translate(-50%, -50%);
   display:flex;
   flex-direction: row;
@@ -163,6 +163,9 @@ body {
 }
 
 @media (min-width:600px) {
+  .final-row-wrapper {
+    left: calc(50% - 12px); /* Корректировка для больших экранов */
+  }
   .title {
     font-size:28px;
   }
