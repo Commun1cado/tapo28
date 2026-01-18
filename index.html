@@ -19,21 +19,47 @@ body {
   width:85vw;
   max-width:380px;
 }
-.card { 
-  width:100%; aspect-ratio:3/4.2;
-  background-image:url('card-back.jpg'); 
+.card-container {
+  perspective:1000px;
+  width:100%;
+  aspect-ratio:3/4.2;
+}
+.card {
+  width:100%;
+  height:100%;
+  position:relative;
+  transition:transform 0.6s;
+  transform-style:preserve-3d;
+  cursor:pointer;
+}
+.card.flipped {
+  transform:rotateY(180deg);
+}
+.card-front, .card-back {
+  position:absolute;
+  width:100%;
+  height:100%;
+  backface-visibility:hidden;
+  border-radius:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.5);
+  border:2px solid rgba(255,255,255,0.3);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.card-front {
+  background-image:url('cards/card-back.jpg');
   background-size:contain;
   background-repeat:no-repeat;
   background-position:center;
   background-color:transparent;
-  border-radius:12px; cursor:pointer; 
-  box-shadow:0 8px 20px rgba(0,0,0,0.5);
-  transition:all 0.3s ease;
-  border:2px solid rgba(255,255,255,0.3);
 }
-.card:active { 
-  transform:scale(0.95);
-  box-shadow:0 5px 15px rgba(0,0,0,0.6);
+.card-back {
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-color:rgba(255,255,255,0.95);
+  transform:rotateY(180deg);
 }
 @media (min-width:600px) {
   .grid { 
@@ -41,45 +67,104 @@ body {
     max-width:450px;
     gap:15px;
   }
-  .card:hover { 
-    transform:translateY(-15px) scale(1.1); 
-    box-shadow:0 20px 40px rgba(0,0,0,0.7);
+  .card:hover:not(.disabled) { 
+    transform:translateY(-15px) scale(1.05);
   }
+  .card.flipped:hover:not(.disabled) {
+    transform:rotateY(180deg) translateY(-15px) scale(1.05);
+  }
+}
+.disabled {
+  pointer-events:none;
 }
 </style>
 </head>
 <body>
-<div class="grid">
-  <div class="card" onclick="select(1)"></div>
-  <div class="card" onclick="select(2)"></div>
-  <div class="card" onclick="select(3)"></div>
-  <div class="card" onclick="select(4)"></div>
-  <div class="card" onclick="select(5)"></div>
-  <div class="card" onclick="select(6)"></div>
-  <div class="card" onclick="select(7)"></div>
-  <div class="card" onclick="select(8)"></div>
-  <div class="card" onclick="select(9)"></div>
-</div>
+<div class="grid" id="grid"></div>
 
 <script>
-const predictions = {
-  1: '⭐ Звезда: Триумф неизбежен',
-  2: '🌙 Луна: Тайны раскроются', 
-  3: '☀️ Солнце: Блеск удачи',
-  4: '⚡ Колесница: Полёт вперёд',
-  5: '👑 Император: Абсолютная власть',
-  6: '💕 Влюблённые: Гармония душ',
-  7: '🔄 Смерть: Великое обновление',
-  8: '🏆 Победа: Триумф близок',
-  9: '✨ Просветление: Новое начало'
-};
-Telegram.WebApp.ready(); 
-Telegram.WebApp.expand();
-function select(n) {
-  Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
-  Telegram.WebApp.showAlert(predictions[n]);
+// ВСЕ 78 КАРТ ТАРО
+const allCards = [
+  // Старшие Арканы (22)
+  'cards/00-TheFool.jpg', 'cards/01-TheMagician.jpg', 'cards/02-TheHighPriestess.jpg',
+  'cards/03-TheEmpress.jpg', 'cards/04-TheEmperor.jpg', 'cards/05-TheHierophant.jpg',
+  'cards/06-TheLovers.jpg', 'cards/07-TheChariot.jpg', 'cards/08-Strength.jpg',
+  'cards/09-TheHermit.jpg', 'cards/10-WheelOfFortune.jpg', 'cards/11-Justice.jpg',
+  'cards/12-TheHangedMan.jpg', 'cards/13-Death.jpg', 'cards/14-Temperance.jpg',
+  'cards/15-TheDevil.jpg', 'cards/16-TheTower.jpg', 'cards/17-TheStar.jpg',
+  'cards/18-TheMoon.jpg', 'cards/19-TheSun.jpg', 'cards/20-Judgement.jpg',
+  'cards/21-TheWorld.jpg',
+  // Кубки (14)
+  'cards/Cups01.jpg', 'cards/Cups02.jpg', 'cards/Cups03.jpg', 'cards/Cups04.jpg',
+  'cards/Cups05.jpg', 'cards/Cups06.jpg', 'cards/Cups07.jpg', 'cards/Cups08.jpg',
+  'cards/Cups09.jpg', 'cards/Cups10.jpg', 'cards/Cups11.jpg', 'cards/Cups12.jpg',
+  'cards/Cups13.jpg', 'cards/Cups14.jpg',
+  // Пентакли (14)
+  'cards/Pentacles01.jpg', 'cards/Pentacles02.jpg', 'cards/Pentacles03.jpg', 'cards/Pentacles04.jpg',
+  'cards/Pentacles05.jpg', 'cards/Pentacles06.jpg', 'cards/Pentacles07.jpg', 'cards/Pentacles08.jpg',
+  'cards/Pentacles09.jpg', 'cards/Pentacles10.jpg', 'cards/Pentacles11.jpg', 'cards/Pentacles12.jpg',
+  'cards/Pentacles13.jpg', 'cards/Pentacles14.jpg',
+  // Мечи (14)
+  'cards/Swords01.jpg', 'cards/Swords02.jpg', 'cards/Swords03.jpg', 'cards/Swords04.jpg',
+  'cards/Swords05.jpg', 'cards/Swords06.jpg', 'cards/Swords07.jpg', 'cards/Swords08.jpg',
+  'cards/Swords09.jpg', 'cards/Swords10.jpg', 'cards/Swords11.jpg', 'cards/Swords12.jpg',
+  'cards/Swords13.jpg', 'cards/Swords14.jpg',
+  // Жезлы (14)
+  'cards/Wands01.jpg', 'cards/Wands02.jpg', 'cards/Wands03.jpg', 'cards/Wands04.jpg',
+  'cards/Wands05.jpg', 'cards/Wands06.jpg', 'cards/Wands07.jpg', 'cards/Wands08.jpg',
+  'cards/Wands09.jpg', 'cards/Wands10.jpg', 'cards/Wands11.jpg', 'cards/Wands12.jpg',
+  'cards/Wands13.jpg', 'cards/Wands14.jpg'
+];
+
+const grid = document.getElementById('grid');
+
+// Создаём 9 рубашек
+for (let i = 0; i < 9; i++) {
+  const container = document.createElement('div');
+  container.className = 'card-container';
+  
+  const card = document.createElement('div');
+  card.className = 'card';
+  
+  const front = document.createElement('div');
+  front.className = 'card-front';
+  
+  const back = document.createElement('div');
+  back.className = 'card-back';
+  
+  card.appendChild(front);
+  card.appendChild(back);
+  container.appendChild(card);
+  
+  container.onclick = () => flipCard(card, back);
+  grid.appendChild(container);
 }
-Telegram.WebApp.MainButton.text = '🔮 Новое предсказание'; 
+
+function getRandomCard() {
+  return allCards[Math.floor(Math.random() * allCards.length)];
+}
+
+function flipCard(cardEl, backEl) {
+  if (cardEl.classList.contains('disabled')) return;
+  
+  cardEl.classList.add('disabled');
+  
+  if (!cardEl.classList.contains('flipped')) {
+    const randomCard = getRandomCard();
+    backEl.style.backgroundImage = `url('${randomCard}')`;
+    cardEl.classList.add('flipped');
+    Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
+  } else {
+    cardEl.classList.remove('flipped');
+  }
+  
+  setTimeout(() => cardEl.classList.remove('disabled'), 600);
+}
+
+Telegram.WebApp.ready();
+Telegram.WebApp.expand();
+
+Telegram.WebApp.MainButton.text = '🔮 Новое гадание';
 Telegram.WebApp.MainButton.color = '#6a0dad';
 Telegram.WebApp.MainButton.textColor = 'white';
 Telegram.WebApp.MainButton.onClick(() => location.reload());
