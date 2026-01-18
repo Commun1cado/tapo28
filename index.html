@@ -70,6 +70,8 @@ body {
   transform:rotateY(180deg);
   box-shadow:inset 0 0 20px rgba(0,0,0,0.4);
 }
+
+/* Анимация карты к центру при выборе */
 @keyframes zoomToCenter {
   0% {
     transform:scale(1);
@@ -94,16 +96,24 @@ body {
     z-index:1;
   }
 }
+
+/* Финальная анимация – собираем 3 карты в РЯД по центру */
 @keyframes finalArrange {
   0% {
-    transform:translate(calc(-50% + var(--finalOffsetX)), -50%) scale(1);
+    transform:translate(-50%, -50%) scale(0.8);
+    opacity:0;
+  }
+  60% {
+    transform:translate(-50%, -50%) scale(1);
     opacity:1;
   }
   100% {
-    transform:translate(calc(-50%), -50%) scale(0.9);
+    transform:translate(-50%, -50%) scale(0.9);
     opacity:1;
   }
 }
+
+/* Исчезновение остальных карт */
 @keyframes fadeOut {
   0% {
     opacity:1;
@@ -112,25 +122,38 @@ body {
     opacity:0;
   }
 }
+
 .card-container.animate-zoom {
   animation:zoomToCenter 0.8s ease-out forwards;
 }
 .card-container.animate-back {
   animation:moveBack 0.6s ease-in forwards;
 }
-.card-container.animate-final {
-  animation:finalArrange 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  position:fixed !important;
-  top:50% !important;
-  left:50% !important;
+
+/* Каждый выбранный контейнер фиксируется, но выравнивание по центру делаем через flex-ряд */
+.final-row-wrapper {
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  display:flex;
+  gap:12px;
+  z-index:2000;
+}
+.final-row-wrapper .card-container {
+  position:static !important;
   width:120px !important;
   height:200px !important;
-  margin:0 !important;
-  transform-origin:center !important;
 }
+.final-row-wrapper .card-container.animate-final {
+  animation:finalArrange 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Fade для обычных контейнеров */
 .card-container.fade-out {
-  animation:fadeOut 0.8s ease-out forwards;
+  animation:fadeOut 0.6s ease-out forwards;
 }
+
 @media (min-width:600px) {
   .title {
     font-size:28px;
@@ -146,7 +169,7 @@ body {
   .card.flipped:hover:not(.disabled) {
     transform:rotateY(180deg) translateY(-15px) scale(1.05);
   }
-  .card-container.animate-final {
+  .final-row-wrapper .card-container {
     width:110px !important;
     height:185px !important;
   }
@@ -238,16 +261,23 @@ function calculateOffset(cardIndex, centerIndex = 4) {
 }
 
 function finalArrangement() {
-  const offsets = [-140, 0, 140];
+  // Обёртка для финального ряда
+  const wrapper = document.createElement('div');
+  wrapper.className = 'final-row-wrapper';
+  document.body.appendChild(wrapper);
   
+  // Переносим выбранные контейнеры внутрь обёртки
   selectedIndices.forEach((index, pos) => {
     const container = containers[index];
-    container.style.setProperty('--finalOffsetX', `${offsets[pos]}px`);
+    wrapper.appendChild(container);
+    
+    // Немного поочерёдный вход
     setTimeout(() => {
       container.classList.add('animate-final');
     }, pos * 150);
   });
   
+  // Скрываем остальные
   containers.forEach((container, index) => {
     if (!selectedIndices.includes(index)) {
       container.classList.add('fade-out');
