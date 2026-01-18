@@ -4,71 +4,71 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 body { 
-  margin:0; padding:40px 20px 60px; 
-  background:linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); 
+  margin:0; padding:20px; 
+  background:url('bg.jpg') center/cover fixed #f5f5f0; 
   font-family:system-ui; 
   display:flex; flex-direction:column; 
-  align-items:center; justify-content:center; 
+  align-items:center; gap:25px; 
   min-height:100vh;
 }
-.arc { 
-  display:flex; flex-wrap:wrap; 
-  justify-content:center; gap:8px; 
-  max-width:400px; margin:0 auto;
-  transform:perspective(500px) rotateX(10deg);
+.row-top { 
+  display:flex; justify-content:space-evenly; 
+  width:100%; max-width:450px; gap:10px;
+}
+.row-bottom { 
+  display:flex; justify-content:center; 
+  width:100%; max-width:350px; gap:15px;
 }
 .card { 
-  width:70px; height:100px; 
+  width:75px; height:110px; 
   background-image:url('card-back.jpg'); 
-  background-size:cover; border-radius:12px; 
-  cursor:pointer; box-shadow:0 8px 25px rgba(0,0,0,0.6);
-  transition:transform 0.4s ease, box-shadow 0.4s ease;
-  position:relative; border:2px solid rgba(255,255,255,0.2);
+  background-size:cover; 
+  border-radius:12px; cursor:pointer; 
+  box-shadow:0 8px 25px rgba(0,0,0,0.4);
+  transition:all 0.3s ease; position:relative;
 }
 .card:hover { 
-  transform:translateY(-15px) scale(1.1) rotateY(5deg) !important; 
-  box-shadow:0 20px 40px rgba(0,0,0,0.8);
-  z-index:10;
+  transform:translateY(-12px) scale(1.08); 
+  box-shadow:0 20px 40px rgba(0,0,0,0.6);
 }
-.card:nth-child(1) { order:3; transform:translateY(-20px); }
-.card:nth-child(2) { order:2; transform:translateY(-10px); }
-.card:nth-child(3) { order:1; }
-.card:nth-child(4) { order:4; transform:translateY(5px); }
-.card:nth-child(5) { order:5; transform:translateY(10px); }
 .card::after {
   content:attr(data-num); 
-  position:absolute; top:4px; right:4px; 
-  background:rgba(0,0,0,0.7); color:white; 
-  padding:2px 6px; border-radius:10px; 
-  font-size:10px; font-weight:bold;
+  position:absolute; bottom:5px; right:5px; 
+  background:rgba(0,0,0,0.8); color:#fff; 
+  padding:3px 8px; border-radius:12px; 
+  font-size:11px; font-weight:bold;
 }
 </style>
 </head>
 <body>
-<div class="arc">
+<div class="row-top">
   <div class="card" data-num="1" onclick="select(1)"></div>
   <div class="card" data-num="2" onclick="select(2)"></div>
   <div class="card" data-num="3" onclick="select(3)"></div>
   <div class="card" data-num="4" onclick="select(4)"></div>
+</div>
+<div class="row-bottom">
   <div class="card" data-num="5" onclick="select(5)"></div>
+  <div class="card" data-num="6" onclick="select(6)"></div>
+  <div class="card" data-num="7" onclick="select(7)"></div>
 </div>
 
 <script>
 const predictions = {
-  1: 'Звезда: Судьба на твоей стороне',
-  2: 'Луна: Интуиция не обманет', 
-  3: 'Солнце: Светлые перемены',
-  4: 'Колесница: Вперед к победе',
-  5: 'Император: Власть над судьбой'
+  1: '⭐ Звезда: Успех близко',
+  2: '🌙 Луна: Чутьё ведёт', 
+  3: '☀️ Солнце: Светлые дни',
+  4: '⚡ Колесница: Победа',
+  5: '👑 Император: Сила в тебе',
+  6: '💕 Влюблённые: Любовь',
+  7: '🔄 Перерождение: Новое'
 };
 Telegram.WebApp.ready(); Telegram.WebApp.expand();
 function select(n) {
-  Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-  Telegram.WebApp.showAlert('Карта #' + n + ':\n\n' + predictions[n]);
+  Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+  Telegram.WebApp.showAlert('Карта #' + n + ':\n' + predictions[n]);
 }
-Telegram.WebApp.MainButton.text = 'Выбрать 3 карты'; 
-Telegram.WebApp.MainButton.color = '#533483';
-Telegram.WebApp.MainButton.textColor = 'white';
+Telegram.WebApp.MainButton.text = 'Новое гадание'; 
 Telegram.WebApp.MainButton.onClick(() => location.reload());
 Telegram.WebApp.MainButton.show();
 </script>
