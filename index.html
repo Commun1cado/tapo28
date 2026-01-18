@@ -225,10 +225,11 @@ function flipCard(cardEl, containerEl, index) {
     selectedCount++;
     
     if (selectedCount === 3) {
-      Telegram.WebApp.close();
+      setTimeout(() => {
+        Telegram.WebApp.close();
+      }, 1000);
     }
   }, 1700);
-}
 
 Telegram.WebApp.ready();
 Telegram.WebApp.expand();
