@@ -9,29 +9,22 @@ body {
   font-family:system-ui; 
   display:flex; flex-direction:column; 
   align-items:center; justify-content:center; 
-  gap:35px; min-height:100vh;
+  gap:30px; min-height:100vh;
 }
-.row-top { 
-  display:flex; justify-content:center; 
-  gap:12px; width:100%;
-}
-.row-middle { 
-  display:flex; justify-content:center; 
-  gap:14px; width:100%;
-}
-.row-bottom { 
-  display:flex; justify-content:center; 
-  gap:16px; width:100%;
+.grid { 
+  display:grid; 
+  grid-template-columns:repeat(3, 80px); 
+  gap:15px; 
+  justify-content:center;
 }
 .card { 
-  width:78px; height:112px; 
+  width:80px; height:115px; 
   background-image:url('card-back.jpg'); 
   background-size:cover; 
   border-radius:14px; cursor:pointer; 
   box-shadow:0 10px 30px rgba(0,0,0,0.6);
   transition:all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
   border:2px solid rgba(255,255,255,0.35);
-  flex-shrink:0;
 }
 .card:hover { 
   transform:translateY(-18px) scale(1.1); 
@@ -40,18 +33,14 @@ body {
 </style>
 </head>
 <body>
-<div class="row-top">
+<div class="grid">
   <div class="card" onclick="select(1)"></div>
   <div class="card" onclick="select(2)"></div>
   <div class="card" onclick="select(3)"></div>
   <div class="card" onclick="select(4)"></div>
-</div>
-<div class="row-middle">
   <div class="card" onclick="select(5)"></div>
   <div class="card" onclick="select(6)"></div>
   <div class="card" onclick="select(7)"></div>
-</div>
-<div class="row-bottom">
   <div class="card" onclick="select(8)"></div>
   <div class="card" onclick="select(9)"></div>
 </div>
