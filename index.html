@@ -22,7 +22,10 @@ body {
 .card { 
   width:100%; aspect-ratio:3/4.2;
   background-image:url('card-back.jpg'); 
-  background-size:cover; 
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-color:rgba(255,255,255,0.95);
   border-radius:12px; cursor:pointer; 
   box-shadow:0 8px 20px rgba(0,0,0,0.5);
   transition:all 0.3s ease;
