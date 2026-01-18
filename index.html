@@ -77,13 +77,13 @@ body {
     z-index:1000;
   }
   100% {
-    transform:scale(2.2) translateY(-8vh) translateX(var(--centerOffsetX, 0));
+    transform:scale(2.2) translateY(var(--centerOffsetY, 0)) translateX(var(--centerOffsetX, 0));
     z-index:1000;
   }
 }
 @keyframes moveBack {
   0% {
-    transform:scale(2.2) translateY(-8vh) translateX(var(--centerOffsetX, 0));
+    transform:scale(2.2) translateY(var(--centerOffsetY, 0)) translateX(var(--centerOffsetX, 0));
     z-index:1000;
   }
   100% {
@@ -189,8 +189,13 @@ function calculateOffset(cardIndex, centerIndex = 4) {
   const cardRect = cardContainer.getBoundingClientRect();
   
   const offsetX = centerRect.left - cardRect.left;
+  const offsetY = centerRect.top - cardRect.top;
   
-  return { offsetX };
+  if (cardIndex < 3) {
+    return { offsetX, offsetY: Math.abs(offsetY) };
+  }
+  
+  return { offsetX, offsetY };
 }
 
 function flipCard(cardEl, containerEl, index) {
@@ -211,6 +216,7 @@ function flipCard(cardEl, containerEl, index) {
   setTimeout(() => {
     const offset = calculateOffset(index, 4);
     containerEl.style.setProperty('--centerOffsetX', `${offset.offsetX * 0.3}px`);
+    containerEl.style.setProperty('--centerOffsetY', `${offset.offsetY * 0.3}px`);
     containerEl.classList.add('animate-zoom');
   }, 300);
   
