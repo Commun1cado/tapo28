@@ -100,7 +100,7 @@ body {
   }
 }
 
-/* Финальная анимация – собираем 3 карты в РЯД по центру */
+/* Финальная анимация – собираем 3 карты в РЯД по центру (2-я карта 2-го ряда) */
 @keyframes finalArrange {
   0% {
     transform:translate(-50%, -50%) scale(0.8);
@@ -133,22 +133,25 @@ body {
   animation:moveBack 0.6s ease-in forwards;
 }
 
-/* Каждый выбранный контейнер фиксируется, но выравнивание по центру делаем через flex-ряд */
+/* Финальный ряд точно по центру второй карты второго ряда */
 .final-row-wrapper {
   position:fixed;
-  top: calc(50% - 40px);
-  left:50%;
-  transform:translate(-50%, -50%);
+  top: 50%; /* Точно по вертикальному центру сетки */
+  left: 50%;
+  transform: translate(-50%, -50%);
   display:flex;
+  flex-direction: row;
   gap:12px;
   z-index:2000;
-  padding:20px 0;
+  align-items: center;
+  justify-content: center;
 }
 .final-row-wrapper .card-container {
   position:static !important;
   width:120px !important;
   height:200px !important;
   flex-shrink:0;
+  flex-grow:0;
 }
 .final-row-wrapper .card-container.animate-final {
   animation:finalArrange 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
@@ -248,7 +251,7 @@ function getRandomCard() {
   return allCards[Math.floor(Math.random() * allCards.length)];
 }
 
-function calculateOffset(cardIndex, centerIndex = 4) {
+function calculateOffset(cardIndex, centerIndex = 4) { // 4 = 2-я карта 2-го ряда (индексы 0-8)
   const centerContainer = containers[centerIndex];
   const cardContainer = containers[cardIndex];
   
@@ -258,16 +261,12 @@ function calculateOffset(cardIndex, centerIndex = 4) {
   const offsetX = centerRect.left - cardRect.left;
   const offsetY = centerRect.top - cardRect.top;
   
-  if (cardIndex < 3) {
-    return { offsetX, offsetY: Math.abs(offsetY) };
-  }
-  
   return { offsetX, offsetY };
 }
 
 function finalArrangement() {
-  const title = document.querySelector('.title');
-  title.style.opacity = '0.5';
+  // Сетка уходит в фон, показываем только выбранные карты по центру второй карты второго ряда
+  grid.style.opacity = '0';
   
   // Обёртка для финального ряда
   const wrapper = document.createElement('div');
@@ -283,13 +282,6 @@ function finalArrangement() {
     setTimeout(() => {
       container.classList.add('animate-final');
     }, pos * 150);
-  });
-  
-  // Скрываем остальные
-  containers.forEach((container, index) => {
-    if (!selectedIndices.includes(index)) {
-      container.classList.add('fade-out');
-    }
   });
   
   setTimeout(() => {
@@ -313,7 +305,7 @@ function flipCard(cardEl, containerEl, index) {
   }, 300);
   
   setTimeout(() => {
-    const offset = calculateOffset(index, 4);
+    const offset = calculateOffset(index, 4); // Центр = индекс 4
     containerEl.style.setProperty('--centerOffsetX', `${offset.offsetX * 0.3}px`);
     containerEl.style.setProperty('--centerOffsetY', `${offset.offsetY * 0.3}px`);
     containerEl.classList.add('animate-zoom');
