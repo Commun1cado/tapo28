@@ -133,11 +133,11 @@ body {
   animation:moveBack 0.6s ease-in forwards;
 }
 
-/* Финальный ряд точно по центру второй карты второго ряда - сдвиг влево */
+/* Финальный ряд - СДВИГ ВПРАВО на 20px */
 .final-row-wrapper {
   position:fixed;
   top: 50%;
-  left: calc(50% - 15px); /* Сдвиг влево для точного центрирования по горизонтали */
+  left: calc(50% + 20px); /* ПРАВее на 20px */
   transform: translate(-50%, -50%);
   display:flex;
   flex-direction: row;
@@ -164,7 +164,7 @@ body {
 
 @media (min-width:600px) {
   .final-row-wrapper {
-    left: calc(50% - 12px); /* Корректировка для больших экранов */
+    left: calc(50% + 16px); /* ПРАВее на 16px для планшетов */
   }
   .title {
     font-size:28px;
@@ -254,7 +254,7 @@ function getRandomCard() {
   return allCards[Math.floor(Math.random() * allCards.length)];
 }
 
-function calculateOffset(cardIndex, centerIndex = 4) { // 4 = 2-я карта 2-го ряда (индексы 0-8)
+function calculateOffset(cardIndex, centerIndex = 4) { // 4 = 2-я карта 2-го ряда
   const centerContainer = containers[centerIndex];
   const cardContainer = containers[cardIndex];
   
@@ -268,20 +268,16 @@ function calculateOffset(cardIndex, centerIndex = 4) { // 4 = 2-я карта 2-
 }
 
 function finalArrangement() {
-  // Сетка уходит в фон, показываем только выбранные карты по центру второй карты второго ряда
   grid.style.opacity = '0';
   
-  // Обёртка для финального ряда
   const wrapper = document.createElement('div');
   wrapper.className = 'final-row-wrapper';
   document.body.appendChild(wrapper);
   
-  // Переносим выбранные контейнеры внутрь обёртки
   selectedIndices.forEach((index, pos) => {
     const container = containers[index];
     wrapper.appendChild(container);
     
-    // Немного поочерёдный вход
     setTimeout(() => {
       container.classList.add('animate-final');
     }, pos * 150);
@@ -308,7 +304,7 @@ function flipCard(cardEl, containerEl, index) {
   }, 300);
   
   setTimeout(() => {
-    const offset = calculateOffset(index, 4); // Центр = индекс 4
+    const offset = calculateOffset(index, 4);
     containerEl.style.setProperty('--centerOffsetX', `${offset.offsetX * 0.3}px`);
     containerEl.style.setProperty('--centerOffsetY', `${offset.offsetY * 0.3}px`);
     containerEl.classList.add('animate-zoom');
