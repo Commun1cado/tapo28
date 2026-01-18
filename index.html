@@ -97,6 +97,49 @@ body {
 .card-container.animate-back {
   animation:moveBack 0.6s ease-in forwards;
 }
+.selected-cards {
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:center;
+  z-index:100;
+}
+.selected-card-badge {
+  background:#6a0dad;
+  color:white;
+  padding:8px 12px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+  box-shadow:0 4px 12px rgba(0,0,0,0.3);
+}
+.submit-btn {
+  position:fixed;
+  bottom:80px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:12px 24px;
+  background:#6a0dad;
+  color:white;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,0.3);
+  display:none;
+  z-index:100;
+}
+.submit-btn.show {
+  display:block;
+}
+.submit-btn:active {
+  transform:translateX(-50%) scale(0.95);
+}
 @media (min-width:600px) {
   .title {
     font-size:28px;
@@ -121,37 +164,97 @@ body {
 <body>
 <div class="title">Выберите 3 карты</div>
 <div class="grid" id="grid"></div>
+<div class="selected-cards" id="selectedCards"></div>
+<button class="submit-btn" id="submitBtn">Отправить гадание</button>
 
 <script>
-const allCards = [
-  'cards/00-TheFool.jpg', 'cards/01-TheMagician.jpg', 'cards/02-TheHighPriestess.jpg',
-  'cards/03-TheEmpress.jpg', 'cards/04-TheEmperor.jpg', 'cards/05-TheHierophant.jpg',
-  'cards/06-TheLovers.jpg', 'cards/07-TheChariot.jpg', 'cards/08-Strength.jpg',
-  'cards/09-TheHermit.jpg', 'cards/10-WheelOfFortune.jpg', 'cards/11-Justice.jpg',
-  'cards/12-TheHangedMan.jpg', 'cards/13-Death.jpg', 'cards/14-Temperance.jpg',
-  'cards/15-TheDevil.jpg', 'cards/16-TheTower.jpg', 'cards/17-TheStar.jpg',
-  'cards/18-TheMoon.jpg', 'cards/19-TheSun.jpg', 'cards/20-Judgement.jpg',
-  'cards/21-TheWorld.jpg',
-  'cards/Cups01.jpg', 'cards/Cups02.jpg', 'cards/Cups03.jpg', 'cards/Cups04.jpg',
-  'cards/Cups05.jpg', 'cards/Cups06.jpg', 'cards/Cups07.jpg', 'cards/Cups08.jpg',
-  'cards/Cups09.jpg', 'cards/Cups10.jpg', 'cards/Cups11.jpg', 'cards/Cups12.jpg',
-  'cards/Cups13.jpg', 'cards/Cups14.jpg',
-  'cards/Pentacles01.jpg', 'cards/Pentacles02.jpg', 'cards/Pentacles03.jpg', 'cards/Pentacles04.jpg',
-  'cards/Pentacles05.jpg', 'cards/Pentacles06.jpg', 'cards/Pentacles07.jpg', 'cards/Pentacles08.jpg',
-  'cards/Pentacles09.jpg', 'cards/Pentacles10.jpg', 'cards/Pentacles11.jpg', 'cards/Pentacles12.jpg',
-  'cards/Pentacles13.jpg', 'cards/Pentacles14.jpg',
-  'cards/Swords01.jpg', 'cards/Swords02.jpg', 'cards/Swords03.jpg', 'cards/Swords04.jpg',
-  'cards/Swords05.jpg', 'cards/Swords06.jpg', 'cards/Swords07.jpg', 'cards/Swords08.jpg',
-  'cards/Swords09.jpg', 'cards/Swords10.jpg', 'cards/Swords11.jpg', 'cards/Swords12.jpg',
-  'cards/Swords13.jpg', 'cards/Swords14.jpg',
-  'cards/Wands01.jpg', 'cards/Wands02.jpg', 'cards/Wands03.jpg', 'cards/Wands04.jpg',
-  'cards/Wands05.jpg', 'cards/Wands06.jpg', 'cards/Wands07.jpg', 'cards/Wands08.jpg',
-  'cards/Wands09.jpg', 'cards/Wands10.jpg', 'cards/Wands11.jpg', 'cards/Wands12.jpg',
-  'cards/Wands13.jpg', 'cards/Wands14.jpg'
-];
+const allCards = {
+  'cards/00-TheFool.jpg': 'Шут',
+  'cards/01-TheMagician.jpg': 'Маг',
+  'cards/02-TheHighPriestess.jpg': 'Жрица',
+  'cards/03-TheEmpress.jpg': 'Императрица',
+  'cards/04-TheEmperor.jpg': 'Император',
+  'cards/05-TheHierophant.jpg': 'Иерофант',
+  'cards/06-TheLovers.jpg': 'Влюбленные',
+  'cards/07-TheChariot.jpg': 'Колесница',
+  'cards/08-Strength.jpg': 'Сила',
+  'cards/09-TheHermit.jpg': 'Отшельник',
+  'cards/10-WheelOfFortune.jpg': 'Колесо Фортуны',
+  'cards/11-Justice.jpg': 'Справедливость',
+  'cards/12-TheHangedMan.jpg': 'Повешенный',
+  'cards/13-Death.jpg': 'Смерть',
+  'cards/14-Temperance.jpg': 'Умеренность',
+  'cards/15-TheDevil.jpg': 'Дьявол',
+  'cards/16-TheTower.jpg': 'Башня',
+  'cards/17-TheStar.jpg': 'Звезда',
+  'cards/18-TheMoon.jpg': 'Луна',
+  'cards/19-TheSun.jpg': 'Солнце',
+  'cards/20-Judgement.jpg': 'Суд',
+  'cards/21-TheWorld.jpg': 'Мир',
+  'cards/Cups01.jpg': 'Туз Кубков',
+  'cards/Cups02.jpg': 'Двойка Кубков',
+  'cards/Cups03.jpg': 'Тройка Кубков',
+  'cards/Cups04.jpg': 'Четвёрка Кубков',
+  'cards/Cups05.jpg': 'Пятёрка Кубков',
+  'cards/Cups06.jpg': 'Шестёрка Кубков',
+  'cards/Cups07.jpg': 'Семёрка Кубков',
+  'cards/Cups08.jpg': 'Восьмёрка Кубков',
+  'cards/Cups09.jpg': 'Девятка Кубков',
+  'cards/Cups10.jpg': 'Десятка Кубков',
+  'cards/Cups11.jpg': 'Паж Кубков',
+  'cards/Cups12.jpg': 'Рыцарь Кубков',
+  'cards/Cups13.jpg': 'Королева Кубков',
+  'cards/Cups14.jpg': 'Король Кубков',
+  'cards/Pentacles01.jpg': 'Туз Пентаклей',
+  'cards/Pentacles02.jpg': 'Двойка Пентаклей',
+  'cards/Pentacles03.jpg': 'Тройка Пентаклей',
+  'cards/Pentacles04.jpg': 'Четвёрка Пентаклей',
+  'cards/Pentacles05.jpg': 'Пятёрка Пентаклей',
+  'cards/Pentacles06.jpg': 'Шестёрка Пентаклей',
+  'cards/Pentacles07.jpg': 'Семёрка Пентаклей',
+  'cards/Pentacles08.jpg': 'Восьмёрка Пентаклей',
+  'cards/Pentacles09.jpg': 'Девятка Пентаклей',
+  'cards/Pentacles10.jpg': 'Десятка Пентаклей',
+  'cards/Pentacles11.jpg': 'Паж Пентаклей',
+  'cards/Pentacles12.jpg': 'Рыцарь Пентаклей',
+  'cards/Pentacles13.jpg': 'Королева Пентаклей',
+  'cards/Pentacles14.jpg': 'Король Пентаклей',
+  'cards/Swords01.jpg': 'Туз Мечей',
+  'cards/Swords02.jpg': 'Двойка Мечей',
+  'cards/Swords03.jpg': 'Тройка Мечей',
+  'cards/Swords04.jpg': 'Четвёрка Мечей',
+  'cards/Swords05.jpg': 'Пятёрка Мечей',
+  'cards/Swords06.jpg': 'Шестёрка Мечей',
+  'cards/Swords07.jpg': 'Семёрка Мечей',
+  'cards/Swords08.jpg': 'Восьмёрка Мечей',
+  'cards/Swords09.jpg': 'Девятка Мечей',
+  'cards/Swords10.jpg': 'Десятка Мечей',
+  'cards/Swords11.jpg': 'Паж Мечей',
+  'cards/Swords12.jpg': 'Рыцарь Мечей',
+  'cards/Swords13.jpg': 'Королева Мечей',
+  'cards/Swords14.jpg': 'Король Мечей',
+  'cards/Wands01.jpg': 'Туз Палиц',
+  'cards/Wands02.jpg': 'Двойка Палиц',
+  'cards/Wands03.jpg': 'Тройка Палиц',
+  'cards/Wands04.jpg': 'Четвёрка Палиц',
+  'cards/Wands05.jpg': 'Пятёрка Палиц',
+  'cards/Wands06.jpg': 'Шестёрка Палиц',
+  'cards/Wands07.jpg': 'Семёрка Палиц',
+  'cards/Wands08.jpg': 'Восьмёрка Палиц',
+  'cards/Wands09.jpg': 'Девятка Палиц',
+  'cards/Wands10.jpg': 'Десятка Палиц',
+  'cards/Wands11.jpg': 'Паж Палиц',
+  'cards/Wands12.jpg': 'Рыцарь Палиц',
+  'cards/Wands13.jpg': 'Королева Палиц',
+  'cards/Wands14.jpg': 'Король Палиц'
+};
 
+const cardNames = Object.values(allCards);
 const grid = document.getElementById('grid');
 const containers = [];
+const selectedCardsDiv = document.getElementById('selectedCards');
+const submitBtn = document.getElementById('submitBtn');
+let selectedCards = [];
 
 for (let i = 0; i < 9; i++) {
   const container = document.createElement('div');
@@ -177,7 +280,7 @@ for (let i = 0; i < 9; i++) {
 }
 
 function getRandomCard() {
-  return allCards[Math.floor(Math.random() * allCards.length)];
+  return cardNames[Math.floor(Math.random() * cardNames.length)];
 }
 
 function calculateOffset(cardIndex, centerIndex = 4) {
@@ -188,13 +291,29 @@ function calculateOffset(cardIndex, centerIndex = 4) {
   const cardRect = cardContainer.getBoundingClientRect();
   
   const offsetX = centerRect.left - cardRect.left;
-  const offsetY = centerRect.top - cardRect.top;
   
-  return { offsetX, offsetY };
+  return { offsetX };
+}
+
+function updateSelectedCards() {
+  selectedCardsDiv.innerHTML = '';
+  selectedCards.forEach(card => {
+    const badge = document.createElement('div');
+    badge.className = 'selected-card-badge';
+    badge.textContent = card;
+    selectedCardsDiv.appendChild(badge);
+  });
+  
+  if (selectedCards.length === 3) {
+    submitBtn.classList.add('show');
+  } else {
+    submitBtn.classList.remove('show');
+  }
 }
 
 function flipCard(cardEl, containerEl, index) {
   if (cardEl.classList.contains('disabled')) return;
+  if (selectedCards.length === 3 && !cardEl.classList.contains('flipped')) return;
   
   cardEl.classList.add('disabled');
   
@@ -202,6 +321,7 @@ function flipCard(cardEl, containerEl, index) {
     const randomCard = getRandomCard();
     const backEl = cardEl.querySelector('.card-back');
     backEl.style.backgroundImage = `url('${randomCard}')`;
+    backEl.dataset.cardName = randomCard;
     Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
     
     setTimeout(() => {
@@ -222,12 +342,26 @@ function flipCard(cardEl, containerEl, index) {
     setTimeout(() => {
       containerEl.classList.remove('animate-back');
       cardEl.classList.remove('disabled');
+      selectedCards.push(randomCard);
+      updateSelectedCards();
     }, 1700);
   } else {
+    const backEl = cardEl.querySelector('.card-back');
+    const cardName = backEl.dataset.cardName;
+    selectedCards = selectedCards.filter(c => c !== cardName);
     cardEl.classList.remove('flipped');
     cardEl.classList.remove('disabled');
+    backEl.style.backgroundImage = '';
+    updateSelectedCards();
   }
 }
+
+submitBtn.onclick = () => {
+  const message = `🔮 Ваше гадание:\n\n${selectedCards.map((card, i) => `${i + 1}. ${card}`).join('\n')}`;
+  
+  Telegram.WebApp.sendData(message);
+  Telegram.WebApp.close();
+};
 
 Telegram.WebApp.ready();
 Telegram.WebApp.expand();
