@@ -24,4 +24,51 @@ body {
   background-image:url('card-back.jpg'); 
   background-size:cover; 
   border-radius:16px; cursor:pointer; 
-  box-shadow:0 12px 35px
+  box-shadow:0 12px 35px rgba(0,0,0,0.6);
+  transition:all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+  border:3px solid rgba(255,255,255,0.4);
+  flex-shrink:0;
+}
+.card:hover { 
+  transform:translateY(-20px) scale(1.12); 
+  box-shadow:0 30px 55px rgba(0,0,0,0.8);
+}
+</style>
+</head>
+<body>
+<div class="row-top">
+  <div class="card" onclick="select(1)"></div>
+  <div class="card" onclick="select(2)"></div>
+  <div class="card" onclick="select(3)"></div>
+  <div class="card" onclick="select(4)"></div>
+</div>
+<div class="row-bottom">
+  <div class="card" onclick="select(5)"></div>
+  <div class="card" onclick="select(6)"></div>
+  <div class="card" onclick="select(7)"></div>
+</div>
+
+<script>
+const predictions = {
+  1: '⭐ Звезда: Триумф неизбежен',
+  2: '🌙 Луна: Тайны раскроются', 
+  3: '☀️ Солнце: Блеск удачи',
+  4: '⚡ Колесница: Полёт вперёд',
+  5: '👑 Император: Абсолютная власть',
+  6: '💕 Влюблённые: Гармония душ',
+  7: '🔄 Смерть: Великое обновление'
+};
+Telegram.WebApp.ready(); 
+Telegram.WebApp.expand();
+function select(n) {
+  Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
+  Telegram.WebApp.showAlert(predictions[n]);
+}
+Telegram.WebApp.MainButton.text = '🔮 Новое предсказание'; 
+Telegram.WebApp.MainButton.color = '#6a0dad';
+Telegram.WebApp.MainButton.textColor = 'white';
+Telegram.WebApp.MainButton.onClick(() => location.reload());
+Telegram.WebApp.MainButton.show();
+</script>
+</body>
+</html>
