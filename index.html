@@ -254,6 +254,7 @@ const containers = [];
 let selectedCount = 0;
 let selectedIndices = [];
 let selectedCards = [];
+let usedCards = []; // Массив уже использованных карт
 
 for (let i = 0; i < 9; i++) {
   const container = document.createElement('div');
@@ -279,7 +280,17 @@ for (let i = 0; i < 9; i++) {
 }
 
 function getRandomCard() {
-  return allCards[Math.floor(Math.random() * allCards.length)];
+  // Фильтруем карты, исключая уже использованные
+  const availableCards = allCards.filter(card => !usedCards.includes(card));
+  
+  // Выбираем случайную из доступных
+  const randomIndex = Math.floor(Math.random() * availableCards.length);
+  const selectedCard = availableCards[randomIndex];
+  
+  // Добавляем в использованные
+  usedCards.push(selectedCard);
+  
+  return selectedCard;
 }
 
 function calculateOffset(cardIndex, centerIndex = 4) {
