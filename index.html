@@ -10,23 +10,34 @@ body {
   font-family:system-ui; 
   display:flex; flex-direction:column; 
   align-items:center; justify-content:center; 
-  height: 100vh;      /* Строго высота экрана */
-  overflow: hidden;   /* Запрет скролла */
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden; /* Нет скроллам! */
   box-sizing: border-box;
 }
 
-/* Старый заголовок */
+/* Общий контейнер, который будем масштабировать если не влезает */
+.main-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  /* Если экран очень маленький по высоте, контент уменьшится */
+  transform-origin: center center; 
+}
+
 .title {
   font-size: 24px;
   font-weight: bold;
   color: #000;
   text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
-  margin-bottom: 20px; /* Отступ снизу до карт */
+  margin-bottom: 15px;
   transition: opacity 0.5s ease;
-  flex-shrink: 0; /* Чтобы заголовок не сжимался */
+  flex-shrink: 0;
 }
 
-/* Новый заголовок */
 .final-title {
   font-size: 24px;
   font-weight: bold;
@@ -46,18 +57,18 @@ body {
   display: grid; 
   grid-template-columns: repeat(3, 1fr); 
   gap: 10px;
-  width: 90vw;       /* Ширина на мобильных */
-  max-width: 360px;  /* Макс ширина сетки */
-  /* Адаптивность по высоте: если экран низкий, уменьшаем сетку */
-  max-height: 75vh;  
-  aspect-ratio: 3 / 4; /* Примерное соотношение сторон сетки 3x3 */
+  width: 90vw;
+  max-width: 360px;
+  /* Возвращаем пропорции, чтобы карты не плющило */
+  aspect-ratio: 3 / 4.8; 
+  flex-shrink: 1; /* Разрешаем сжиматься если совсем тесно */
 }
 
-/* Контейнер карты - теперь резиновый */
+/* Пропорции карты фиксированные */
 .card-container {
   perspective: 1000px;
   width: 100%;
-  height: 100%; /* Заполняет ячейку грида */
+  height: 100%;
   position: relative;
   transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -76,7 +87,7 @@ body {
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
-  border-radius: 8px; /* Чуть меньше радиус */
+  border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.5);
   border: 1px solid rgba(255,255,255,0.3);
   display: flex;
@@ -126,17 +137,23 @@ body {
   visibility: hidden;
 }
 .final-placeholder-item {
-  width: 100px; /* Чуть меньше для надежности */
-  height: 170px;
+  width: 115px;
+  height: 195px;
 }
 
-/* Медиа-запрос для десктопа/больших экранов */
-@media (min-height: 800px) and (min-width: 600px) {
-  .grid { 
-    max-width: 400px; /* Можно чуть шире на больших экранах */
-    gap: 15px;
+/* Медиа-запросы для адаптации высоты */
+/* Если экран низкий (ландшафт на мобиле или веб версия), уменьшаем сетку */
+@media (max-height: 700px) {
+  .grid {
+    width: auto;
+    height: 75vh; /* Ограничиваем по высоте */
+    aspect-ratio: 3 / 4.8; /* Сохраняем пропорции */
   }
-  .title, .final-title { font-size: 32px; }
+}
+
+/* На десктопе, если экран большой - чуть увеличим */
+@media (min-width: 600px) and (min-height: 800px) {
+  .grid { max-width: 400px; gap: 15px; }
   .final-placeholder-item { width: 120px; height: 200px; }
 }
 
@@ -145,9 +162,12 @@ body {
 </head>
 
 <body>
-<div class="title">Выберите 3 карты</div>
-<div class="final-title">Карты выбраны</div>
-<div class="grid" id="grid"></div>
+
+<div class="main-wrapper">
+  <div class="title">Выберите 3 карты</div>
+  <div class="final-title">Карты выбраны</div>
+  <div class="grid" id="grid"></div>
+</div>
 
 <div class="final-placeholder" id="finalPlaceholder">
   <div class="final-placeholder-item"></div>
@@ -156,7 +176,7 @@ body {
 </div>
 
 <script>
-// ... (Весь JS код остается ТЕМ ЖЕ, без изменений) ...
+// JS без изменений
 const allCards = [
   'cards/00-TheFool.jpg', 'cards/01-TheMagician.jpg', 'cards/02-TheHighPriestess.jpg',
   'cards/03-TheEmpress.jpg', 'cards/04-TheEmperor.jpg', 'cards/05-TheHierophant.jpg',
@@ -255,10 +275,9 @@ function finalArrangement() {
     const deltaY = finalRect.top - rect.top;
     
     const scaleX = finalRect.width / rect.width;
-    const scaleY = finalRect.height / rect.height; // Учитываем и высоту для точного масштаба
+    const scaleY = finalRect.height / rect.height;
 
     container.style.zIndex = 2000 + i;
-    // Используем scaleY тоже, чтобы пропорции не ехали если ячейки разные
     container.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`;
   });
 
