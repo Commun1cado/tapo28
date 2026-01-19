@@ -4,17 +4,6 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
-/* НАСТРОЙКА СДВИГА (оставляем, раз просил центровку на маке) */
-:root {
-  --finalShiftX: 0px; 
-}
-
-@media (min-width: 600px) {
-  :root {
-    --finalShiftX: 18px; 
-  }
-}
-
 body { 
   margin:0; padding:0; 
   background:url('tarot-bg.jpg') center/cover fixed no-repeat; 
@@ -55,7 +44,7 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -180px) translateX(var(--finalShiftX)) translateZ(200px); 
+  transform: translate(-50%, -180px) translateZ(200px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 1s ease 0.5s;
@@ -91,7 +80,6 @@ body {
 }
 .card.flipped { transform: rotateY(180deg); }
 
-/* ОБЩИЕ СТИЛИ */
 .card-front, .card-back {
   position: absolute;
   width: 100%;
@@ -99,7 +87,7 @@ body {
   backface-visibility: hidden;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.3); /* Вернули тонкую обводку */
+  border: 1px solid rgba(255,255,255,0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,17 +95,12 @@ body {
   background-position: center;
 }
 
-/* РУБАШКА (FRONT) - ПРОСТО И НАДЕЖНО */
 .card-front {
   background-image: url('cards/card-back.jpg');
   background-color: #2a1a4a;
-  
-  /* Самое надежное решение: растянуть ровно по краям */
-  /* Никаких отступов, никаких обрезок */
   background-size: 100% 100%; 
 }
 
-/* ЛИЦО (BACK) */
 .card-back {
   background-color: #1a1a1a;
   transform: rotateY(180deg);
@@ -143,12 +126,11 @@ body {
   pointer-events: none;
 }
 
-/* ФИНАЛЬНЫЙ ПЛЕЙСХОЛДЕР */
 .final-placeholder {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) translateX(var(--finalShiftX));
+  transform: translate(-50%, -50%);
   display: flex;
   gap: 10px;
   pointer-events: none;
@@ -167,13 +149,11 @@ body {
   }
 }
 
-/* ДЕСКТОП ВЕРСИЯ */
 @media (min-width: 600px) and (min-height: 800px) {
   .grid { max-width: 400px; gap: 15px; }
   .final-placeholder-item { width: 130px; height: 215px; }
   .title, .final-title { font-size: 32px; }
-  
-  .final-title { transform: translate(-50%, -220px) translateX(var(--finalShiftX)) translateZ(200px); }
+  .final-title { transform: translate(-50%, -220px) translateZ(200px); }
 }
 
 .disabled { pointer-events: none; }
@@ -195,7 +175,6 @@ body {
 </div>
 
 <script>
-// JS код без изменений
 const allCards = [
   'cards/00-TheFool.jpg', 'cards/01-TheMagician.jpg', 'cards/02-TheHighPriestess.jpg',
   'cards/03-TheEmpress.jpg', 'cards/04-TheEmperor.jpg', 'cards/05-TheHierophant.jpg',
@@ -282,6 +261,8 @@ function finalArrangement() {
     }
   });
 
+  finalPlaceholder.style.visibility = 'visible';
+  
   const placeholders = finalPlaceholder.querySelectorAll('.final-placeholder-item');
   const finalRects = Array.from(placeholders).map(p => p.getBoundingClientRect());
 
