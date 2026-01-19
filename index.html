@@ -329,11 +329,13 @@ function finalArrangement() {
   const totalWidth = finalCardWidth * 3 + gap * 2;
   const startX = viewportCenterX - totalWidth / 2;
 
-  selectedIndices.forEach((index, i) => {
-    const container = containers[index];
+  // Сортируем по порядку выбора, а не по индексу в сетке
+  selectedIndices.forEach((gridIndex, clickOrder) => {
+    const container = containers[gridIndex];
     const rect = container.getBoundingClientRect();
 
-    const targetCenterX = startX + finalCardWidth * i + gap * i + finalCardWidth / 2;
+    // clickOrder: 0 = первая кликнутая, 1 = вторая, 2 = третья
+    const targetCenterX = startX + finalCardWidth * clickOrder + gap * clickOrder + finalCardWidth / 2;
     const targetCenterY = viewportCenterY;
 
     const currentCenterX = rect.left + rect.width / 2;
@@ -345,7 +347,7 @@ function finalArrangement() {
     const scaleX = finalCardWidth / rect.width;
     const scaleY = finalCardHeight / rect.height;
 
-    container.style.zIndex = 2000 + i;
+    container.style.zIndex = 2000 + clickOrder;
     container.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`;
   });
 
