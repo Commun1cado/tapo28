@@ -12,11 +12,10 @@ body {
   align-items:center; justify-content:center; 
   height: 100vh;
   width: 100vw;
-  overflow: hidden; /* Нет скроллам! */
+  overflow: hidden;
   box-sizing: border-box;
 }
 
-/* Общий контейнер, который будем масштабировать если не влезает */
 .main-wrapper {
   display: flex;
   flex-direction: column;
@@ -24,8 +23,6 @@ body {
   justify-content: center;
   width: 100%;
   height: 100%;
-  /* Если экран очень маленький по высоте, контент уменьшится */
-  transform-origin: center center; 
 }
 
 .title {
@@ -36,6 +33,7 @@ body {
   margin-bottom: 15px;
   transition: opacity 0.5s ease;
   flex-shrink: 0;
+  z-index: 10;
 }
 
 .final-title {
@@ -46,11 +44,11 @@ body {
   position: fixed;
   top: 35%;
   left: 50%;
-  transform: translate(-50%, -100%);
+  transform: translate(-50%, -100%) translateZ(100px); /* 3D подъем */
   opacity: 0;
   pointer-events: none;
   transition: opacity 1s ease 0.5s;
-  z-index: 3000;
+  z-index: 9999; /* Самый высокий слой */
 }
 
 .grid { 
@@ -59,12 +57,11 @@ body {
   gap: 10px;
   width: 90vw;
   max-width: 360px;
-  /* Возвращаем пропорции, чтобы карты не плющило */
+  /* Пропорции всей сетки, чтобы карты были ~ 300x510 */
   aspect-ratio: 3 / 4.8; 
-  flex-shrink: 1; /* Разрешаем сжиматься если совсем тесно */
+  flex-shrink: 1;
 }
 
-/* Пропорции карты фиксированные */
 .card-container {
   perspective: 1000px;
   width: 100%;
@@ -82,6 +79,7 @@ body {
   cursor: pointer;
 }
 .card.flipped { transform: rotateY(180deg); }
+
 .card-front, .card-back {
   position: absolute;
   width: 100%;
@@ -93,19 +91,25 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  /* Важно: фон не залезает под скругления */
+  background-clip: padding-box; 
 }
+
 .card-front {
   background-image: url('cards/card-back.jpg');
   background-color: #2a1a4a;
-  background-size: contain;
+  /* Чуть меньше 100%, чтобы не резалось краями */
+  background-size: 96% auto; 
 }
+
 .card-back {
   background-color: #1a1a1a;
   transform: rotateY(180deg);
   box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+  /* Картинка таро тоже чуть меньше, чтобы видеть всю кайму */
+  background-size: 96% 96%; 
 }
 
 @keyframes zoomToCenter {
@@ -141,20 +145,18 @@ body {
   height: 195px;
 }
 
-/* Медиа-запросы для адаптации высоты */
-/* Если экран низкий (ландшафт на мобиле или веб версия), уменьшаем сетку */
 @media (max-height: 700px) {
   .grid {
     width: auto;
-    height: 75vh; /* Ограничиваем по высоте */
-    aspect-ratio: 3 / 4.8; /* Сохраняем пропорции */
+    height: 75vh;
+    aspect-ratio: 3 / 4.8;
   }
 }
 
-/* На десктопе, если экран большой - чуть увеличим */
 @media (min-width: 600px) and (min-height: 800px) {
   .grid { max-width: 400px; gap: 15px; }
   .final-placeholder-item { width: 120px; height: 200px; }
+  .title, .final-title { font-size: 32px; }
 }
 
 .disabled { pointer-events: none; }
@@ -176,7 +178,7 @@ body {
 </div>
 
 <script>
-// JS без изменений
+// JS код без изменений
 const allCards = [
   'cards/00-TheFool.jpg', 'cards/01-TheMagician.jpg', 'cards/02-TheHighPriestess.jpg',
   'cards/03-TheEmpress.jpg', 'cards/04-TheEmperor.jpg', 'cards/05-TheHierophant.jpg',
