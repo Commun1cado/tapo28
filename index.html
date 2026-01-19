@@ -4,6 +4,17 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
+/* НАСТРОЙКА СДВИГА (оставляем, раз просил центровку на маке) */
+:root {
+  --finalShiftX: 0px; 
+}
+
+@media (min-width: 600px) {
+  :root {
+    --finalShiftX: 18px; 
+  }
+}
+
 body { 
   margin:0; padding:0; 
   background:url('tarot-bg.jpg') center/cover fixed no-repeat; 
@@ -36,7 +47,6 @@ body {
   z-index: 10;
 }
 
-/* ЗАГОЛОВОК ФИНАЛЬНЫЙ */
 .final-title {
   font-size: 24px;
   font-weight: bold;
@@ -44,35 +54,15 @@ body {
   text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
   position: fixed;
   top: 50%;
-  left: 50%; /* На мобилках - центр */
-  transform: translate(-50%, -180px) translateZ(200px); 
+  left: 50%;
+  transform: translate(-50%, -180px) translateX(var(--finalShiftX)) translateZ(200px); 
   opacity: 0;
   pointer-events: none;
   transition: opacity 1s ease 0.5s;
   z-index: 9999;
   white-space: nowrap;
-  width: 300px;
-  text-align: center;
 }
 
-/* НЕВИДИМЫЙ БЛОК-ЦЕЛЬ (куда летят карты) */
-.final-placeholder {
-  position: fixed;
-  top: 50%;
-  left: 50%; /* На мобилках - центр */
-  transform: translate(-50%, -50%);
-  display: flex;
-  gap: 10px;
-  pointer-events: none;
-  visibility: hidden;
-}
-
-.final-placeholder-item {
-  width: 115px;
-  height: 195px;
-}
-
-/* Сетка карт */
 .grid { 
   display: grid; 
   grid-template-columns: repeat(3, 1fr); 
@@ -101,6 +91,7 @@ body {
 }
 .card.flipped { transform: rotateY(180deg); }
 
+/* ОБЩИЕ СТИЛИ */
 .card-front, .card-back {
   position: absolute;
   width: 100%;
@@ -108,6 +99,7 @@ body {
   backface-visibility: hidden;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.3); /* Вернули тонкую обводку */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -115,24 +107,22 @@ body {
   background-position: center;
 }
 
-/* Рубашка */
+/* РУБАШКА (FRONT) - ПРОСТО И НАДЕЖНО */
 .card-front {
   background-image: url('cards/card-back.jpg');
   background-color: #2a1a4a;
+  
+  /* Самое надежное решение: растянуть ровно по краям */
+  /* Никаких отступов, никаких обрезок */
   background-size: 100% 100%; 
-  background-clip: content-box;
-  border: 4px solid transparent; 
-  outline: 1px solid rgba(255,255,255,0.3);
-  outline-offset: -4px; 
 }
 
-/* Лицо */
+/* ЛИЦО (BACK) */
 .card-back {
   background-color: #1a1a1a;
   transform: rotateY(180deg);
   box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
   background-size: 96% 96%; 
-  border: 1px solid rgba(255,255,255,0.3);
 }
 
 @keyframes zoomToCenter {
@@ -153,6 +143,22 @@ body {
   pointer-events: none;
 }
 
+/* ФИНАЛЬНЫЙ ПЛЕЙСХОЛДЕР */
+.final-placeholder {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateX(var(--finalShiftX));
+  display: flex;
+  gap: 10px;
+  pointer-events: none;
+  visibility: hidden;
+}
+.final-placeholder-item {
+  width: 115px;
+  height: 195px;
+}
+
 @media (max-height: 700px) {
   .grid {
     width: auto;
@@ -161,26 +167,13 @@ body {
   }
 }
 
-/* --- ИСПРАВЛЕНИЕ ДЛЯ ДЕСКТОПА --- */
+/* ДЕСКТОП ВЕРСИЯ */
 @media (min-width: 600px) and (min-height: 800px) {
   .grid { max-width: 400px; gap: 15px; }
   .final-placeholder-item { width: 130px; height: 215px; }
-  .title { font-size: 32px; }
+  .title, .final-title { font-size: 32px; }
   
-  /* 
-     СДВИГАЕМ "МЕСТО НАЗНАЧЕНИЯ" ВПРАВО 
-     Вместо left: 50% ставим 52% (это примерно +30-40px на Full HD)
-  */
-  .final-placeholder {
-    left: 52%; 
-  }
-  
-  /* Заголовок тоже туда же */
-  .final-title { 
-    font-size: 32px;
-    left: 52%; 
-    transform: translate(-50%, -220px) translateZ(200px); 
-  }
+  .final-title { transform: translate(-50%, -220px) translateX(var(--finalShiftX)) translateZ(200px); }
 }
 
 .disabled { pointer-events: none; }
@@ -202,7 +195,7 @@ body {
 </div>
 
 <script>
-// Стандартный JS без хаков
+// JS код без изменений
 const allCards = [
   'cards/00-TheFool.jpg', 'cards/01-TheMagician.jpg', 'cards/02-TheHighPriestess.jpg',
   'cards/03-TheEmpress.jpg', 'cards/04-TheEmperor.jpg', 'cards/05-TheHierophant.jpg',
@@ -297,7 +290,6 @@ function finalArrangement() {
     const rect = container.getBoundingClientRect();
     const finalRect = finalRects[i];
 
-    // JS сам найдет новые координаты, потому что мы сдвинули CSS placeholder!
     const deltaX = finalRect.left - rect.left;
     const deltaY = finalRect.top - rect.top;
     
