@@ -143,7 +143,7 @@ body {
 
 .decode-button {
   position: fixed;
-  bottom: 140px;
+  bottom: 80px;
   left: 50%;
   transform: translateX(-50%) translateY(100px);
   background: url('tarot-bg.jpg') center/cover;
@@ -174,16 +174,20 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
+@media (max-width: 599px) {
+  .decode-button { bottom: 120px !important; }
+}
+
+@media (min-width: 600px) {
+  .decode-button { bottom: 140px !important; }
+}
+
 @media (max-height: 700px) {
   .grid {
     width: auto;
     height: 75vh;
     aspect-ratio: 3 / 4.8;
   }
-}
-
-@media (min-width: 600px) {
-  .decode-button { bottom: 120px; }  /* <-- Для Mac Telegram Desktop */
 }
 
 @media (min-width: 600px) and (min-height: 800px) {
@@ -313,15 +317,12 @@ function finalArrangement() {
   const totalWidth = finalCardWidth * 3 + gap * 2;
   const startX = viewportCenterX - totalWidth / 2;
 
-  // На десктопе сдвигаем карты ВЫШЕ, чтобы кнопка была ниже
-  const cardOffsetY = window.innerWidth >= 600 ? -60 : 0;
-
   selectedIndices.forEach((index, i) => {
     const container = containers[index];
     const rect = container.getBoundingClientRect();
 
     const targetCenterX = startX + finalCardWidth * i + gap * i + finalCardWidth / 2;
-    const targetCenterY = viewportCenterY + cardOffsetY;
+    const targetCenterY = viewportCenterY;
 
     const currentCenterX = rect.left + rect.width / 2;
     const currentCenterY = rect.top + rect.height / 2;
@@ -382,8 +383,6 @@ function flipCard(cardEl, containerEl, index) {
 decodeButton.addEventListener('click', () => {
   Telegram.WebApp.HapticFeedback.impactOccurred('medium');
   console.log('Выбранные карты:', selectedCards);
-  // Здесь можно добавить переход на страницу с расшифровкой
-  // window.location.href = 'decode.html?cards=' + selectedCards.join(',');
 });
 
 Telegram.WebApp.ready();
