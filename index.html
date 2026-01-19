@@ -15,21 +15,33 @@ body {
   padding-bottom: 80px;
   box-sizing: border-box;
 }
-.title, .final-title {
+
+/* Старый заголовок (вверху) */
+.title {
   font-size:24px;
   font-weight:bold;
   color:#000;
   text-shadow:2px 2px 4px rgba(255,255,255,0.5);
   margin-top:20px;
-  position: absolute; /* Чтобы они были в одном месте */
-  top: 40px;          /* Фиксируем сверху */
-  transition: opacity 0.8s ease; /* Плавное появление/исчезновение */
+  transition: opacity 0.5s ease; /* Быстрое исчезновение */
 }
-/* Скрытый заголовок "Карты выбраны" */
+
+/* Новый заголовок (над картами) */
 .final-title {
+  font-size:24px;
+  font-weight:bold;
+  color:#000;
+  text-shadow:2px 2px 4px rgba(255,255,255,0.5);
+  position: fixed;   /* Фиксируем относительно экрана */
+  top: 35%;          /* Прямо над центром (карты в центре = 50%) */
+  left: 50%;
+  transform: translate(-50%, -100%); /* Центрируем и чуть поднимаем */
   opacity: 0;
   pointer-events: none;
+  transition: opacity 1s ease 0.5s; /* Появляется плавнее и с задержкой */
+  z-index: 3000;     /* Поверх всего */
 }
+
 .grid { 
   display:grid; 
   grid-template-columns:repeat(3, 1fr); 
@@ -115,7 +127,8 @@ body {
 }
 
 @media (min-width:600px) {
-  .title, .final-title { font-size:28px; top: 50px; }
+  .title, .final-title { font-size:28px; }
+  .final-title { top: 38%; } /* Чуть ниже на десктопе */
   .grid { width:65vw; max-width:330px; gap:10px; }
   .final-placeholder-item { width: 105px; height: 180px; }
   .card:hover:not(.disabled) { transform:translateY(-15px) scale(1.05); }
@@ -211,21 +224,22 @@ function calculateOffset(cardIndex, centerIndex = 4) {
 }
 
 function finalArrangement() {
-  // 1. Меняем заголовки
-  document.querySelector('.title').style.opacity = '0'; // Скрываем "Выберите 3 карты"
+  // 1. Скрываем "Выберите 3 карты" СРАЗУ (0 задержка)
+  const oldTitle = document.querySelector('.title');
+  oldTitle.style.opacity = '0';
   
-  setTimeout(() => {
-     document.querySelector('.final-title').style.opacity = '1'; // Показываем "Карты выбраны"
-  }, 200); // Небольшая задержка для плавности
+  // 2. Показываем "Карты выбраны"
+  const newTitle = document.querySelector('.final-title');
+  newTitle.style.opacity = '1'; // Появится с задержкой 0.5s (из CSS)
 
-  // 2. Скрываем невыбранные карты
+  // 3. Скрываем невыбранные
   containers.forEach((container, index) => {
     if (!selectedIndices.includes(index)) {
       container.classList.add('fade-out');
     }
   });
 
-  // 3. Перемещаем карты в центр
+  // 4. Полет карт
   const placeholders = finalPlaceholder.querySelectorAll('.final-placeholder-item');
   const finalRects = Array.from(placeholders).map(p => p.getBoundingClientRect());
 
@@ -243,7 +257,7 @@ function finalArrangement() {
     container.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX})`;
   });
 
-  setTimeout(() => Telegram.WebApp.close(), 3000);
+  setTimeout(() => Telegram.WebApp.close(), 3500);
 }
 
 function flipCard(cardEl, containerEl, index) {
