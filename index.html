@@ -44,7 +44,7 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -180px) translateZ(200px);
+  transform: translate(-50%, -240px) translateZ(200px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 1s ease 0.5s;
@@ -143,7 +143,7 @@ body {
 
 .decode-button {
   position: fixed;
-  bottom: 20px;
+  bottom: 80px;
   left: 50%;
   transform: translateX(-50%) translateY(100px);
   background: url('tarot-bg.jpg') center/cover;
@@ -173,6 +173,7 @@ body {
   transform: translateX(-50%) translateY(2px) scale(0.98);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
+
 @media (max-height: 700px) {
   .grid {
     width: auto;
@@ -185,8 +186,8 @@ body {
   .grid { max-width: 400px; gap: 15px; }
   .final-placeholder-item { width: 130px; height: 215px; }
   .title, .final-title { font-size: 32px; }
-  .final-title { transform: translate(-50%, -220px) translateZ(200px); }
-  .decode-button { font-size: 20px; padding: 18px 50px; }
+  .final-title { transform: translate(-50%, -280px) translateZ(200px); }
+  .decode-button { font-size: 20px; padding: 18px 50px; bottom: 100px; }
 }
 
 .disabled { pointer-events: none; }
@@ -373,9 +374,8 @@ function flipCard(cardEl, containerEl, index) {
 
 decodeButton.addEventListener('click', () => {
   Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-  // Здесь можно отправить выбранные карты на сервер
   console.log('Выбранные карты:', selectedCards);
-  // Например: переход на страницу с расшифровкой
+  // Здесь можно добавить переход на страницу с расшифровкой
   // window.location.href = 'decode.html?cards=' + selectedCards.join(',');
 });
 
