@@ -36,22 +36,22 @@ body {
   z-index: 10;
 }
 
-/* ФИНАЛЬНЫЙ ЗАГОЛОВОК - теперь он всегда над центром */
+/* ФИНАЛЬНЫЙ ЗАГОЛОВОК */
 .final-title {
   font-size: 24px;
   font-weight: bold;
   color: #000;
   text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
   position: fixed;
-  top: 50%;         /* Центр экрана */
+  top: 50%;
   left: 50%;
-  /* Сдвигаем влево на 50% (центровка) и ВВЕРХ на 180px от центра */
+  /* Сдвигаем влево на 50% и ВВЕРХ на 180px */
   transform: translate(-50%, -180px) translateZ(200px); 
   opacity: 0;
   pointer-events: none;
   transition: opacity 1s ease 0.5s;
   z-index: 9999;
-  white-space: nowrap; /* Чтобы не переносился */
+  white-space: nowrap;
 }
 
 .grid { 
@@ -129,11 +129,12 @@ body {
   pointer-events: none;
 }
 
+/* ФИНАЛЬНЫЙ ПЛЕЙСХОЛДЕР */
 .final-placeholder {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* Карты точно по центру */
+  transform: translate(-50%, -50%); /* По умолчанию ровно по центру */
   display: flex;
   gap: 10px;
   pointer-events: none;
@@ -152,13 +153,21 @@ body {
   }
 }
 
-/* Увеличиваем масштаб на больших экранах */
+/* ДЕСКТОП ВЕРСИЯ */
 @media (min-width: 600px) and (min-height: 800px) {
   .grid { max-width: 400px; gap: 15px; }
   .final-placeholder-item { width: 130px; height: 215px; }
   .title, .final-title { font-size: 32px; }
-  /* Если карты больше, поднимаем заголовок выше */
+  
+  /* Поднимаем заголовок выше */
   .final-title { transform: translate(-50%, -220px) translateZ(200px); }
+  
+  /* СДВИГАЕМ КАРТЫ ВПРАВО на десктопе */
+  .final-placeholder {
+    /* translate(-45%, ...) вместо -50% сдвинет блок вправо на 5% от его ширины */
+    /* Или можно добавить марджин слева */
+    margin-left: 15px; 
+  }
 }
 
 .disabled { pointer-events: none; }
@@ -180,7 +189,6 @@ body {
 </div>
 
 <script>
-// JS код без изменений
 const allCards = [
   'cards/00-TheFool.jpg', 'cards/01-TheMagician.jpg', 'cards/02-TheHighPriestess.jpg',
   'cards/03-TheEmpress.jpg', 'cards/04-TheEmperor.jpg', 'cards/05-TheHierophant.jpg',
