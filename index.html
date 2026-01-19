@@ -4,15 +4,15 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
-/* НАСТРОЙКА СДВИГА */
+/* НАСТРОЙКИ СДВИГА */
 :root {
-  --finalShiftX: 0px; /* Мобильные: без сдвига */
+  --cardsShiftX: 0px; 
 }
 
 @media (min-width: 600px) {
   :root {
-    /* БЫЛО 18px, СТАЛО 35px — сдвигаем сильнее вправо для Мака */
-    --finalShiftX: 35px; 
+    /* Сдвигаем ТОЛЬКО карты вправо на 50px */
+    --cardsShiftX: 50px; 
   }
 }
 
@@ -56,8 +56,8 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  /* Применяем усиленный сдвиг --finalShiftX */
-  transform: translate(-50%, -180px) translateX(var(--finalShiftX)) translateZ(200px); 
+  /* УБРАЛИ translateX(var(--cardsShiftX)) отсюда! Текст теперь СТРОГО по центру */
+  transform: translate(-50%, -180px) translateZ(200px); 
   opacity: 0;
   pointer-events: none;
   transition: opacity 1s ease 0.5s;
@@ -100,7 +100,6 @@ body {
   backface-visibility: hidden;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,8 +110,13 @@ body {
 .card-front {
   background-image: url('cards/card-back.jpg');
   background-color: #2a1a4a;
-  /* Идеальное заполнение 100% */
+  /* Идеальное заполнение */
   background-size: 100% 100%; 
+  /* Рамка и клип */
+  background-clip: content-box;
+  border: 4px solid transparent; 
+  outline: 1px solid rgba(255,255,255,0.3);
+  outline-offset: -4px; 
 }
 
 .card-back {
@@ -120,6 +124,7 @@ body {
   transform: rotateY(180deg);
   box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
   background-size: 96% 96%; 
+  border: 1px solid rgba(255,255,255,0.3);
 }
 
 @keyframes zoomToCenter {
@@ -145,8 +150,8 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  /* Применяем усиленный сдвиг --finalShiftX */
-  transform: translate(-50%, -50%) translateX(var(--finalShiftX));
+  /* Сдвигаем ТОЛЬКО карты вправо на --cardsShiftX (50px) */
+  transform: translate(-50%, -50%) translateX(var(--cardsShiftX));
   display: flex;
   gap: 10px;
   pointer-events: none;
@@ -170,8 +175,8 @@ body {
   .final-placeholder-item { width: 130px; height: 215px; }
   .title, .final-title { font-size: 32px; }
   
-  /* Поднимаем заголовок выше + сдвиг */
-  .final-title { transform: translate(-50%, -220px) translateX(var(--finalShiftX)) translateZ(200px); }
+  /* Текст просто поднимаем, без бокового сдвига */
+  .final-title { transform: translate(-50%, -220px) translateZ(200px); }
 }
 
 .disabled { pointer-events: none; }
