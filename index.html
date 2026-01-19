@@ -43,7 +43,9 @@ body {
   transform-style:preserve-3d;
   cursor:pointer;
 }
-.card.flipped { transform:rotateY(180deg); }
+.card.flipped {
+  transform:rotateY(180deg);
+}
 .card-front, .card-back {
   position:absolute;
   width:100%;
@@ -72,7 +74,6 @@ body {
   box-shadow:inset 0 0 20px rgba(0,0,0,0.4);
 }
 
-/* Выбор — зум к центру + возврат */
 @keyframes zoomToCenter {
   0% { transform:scale(1); z-index:1000; }
   50% { transform:scale(1.5); z-index:1000; }
@@ -82,75 +83,62 @@ body {
   0% { transform:scale(2.2) translateY(var(--centerOffsetY, 0)) translateX(var(--centerOffsetX, 0)); z-index:1000; }
   100% { transform:scale(1) translateY(0) translateX(0); z-index:1; }
 }
-.card-container.animate-zoom { animation:zoomToCenter 0.8s ease-out forwards; }
-.card-container.animate-back { animation:moveBack 0.6s ease-in forwards; }
 
-/* ПЛАВНОЕ "ДЫХАНИЕ" (спокойно, залипательно) */
+/* Финальная анимация БЕЗ translate - просто scale */
 @keyframes finalArrange {
-  0% {
-    transform: translateY(30px) scale(0.85);
-    opacity: 0;
-    filter: blur(4px) brightness(1.05);
-  }
-  40% {
-    transform: translateY(-8px) scale(0.98);
-    opacity: 0.75;
-    filter: blur(1px) brightness(1.08);
-  }
-  70% {
-    transform: translateY(3px) scale(1.02);
-    opacity: 0.95;
-    filter: blur(0px) brightness(1.02);
-  }
-  100% {
-    transform: translateY(0px) scale(0.9);
-    opacity: 1;
-    filter: blur(0px) brightness(1);
-  }
+  0% { transform:scale(0.8); opacity:0; }
+  60% { transform:scale(1); opacity:1; }
+  100% { transform:scale(0.9); opacity:1; }
 }
 
 @keyframes fadeOut {
   0% { opacity:1; }
   100% { opacity:0; }
 }
-.card-container.fade-out { animation:fadeOut 0.6s ease-out forwards; }
 
-/* Финальный ряд — центр экрана */
-.final-row-wrapper{
+.card-container.animate-zoom { animation:zoomToCenter 0.8s ease-out forwards; }
+.card-container.animate-back { animation:moveBack 0.6s ease-in forwards; }
+
+/* Финальный ряд ТОЧНО ПО ЦЕНТРУ */
+.final-row-wrapper {
   position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display:flex;
+  flex-direction: row;
   gap:10px;
   z-index:2000;
-  align-items:center;
-  justify-content:center;
+  align-items: center;
+  justify-content: center;
 }
-.final-row-wrapper .card-container{
+.final-row-wrapper .card-container {
   position:static !important;
   width:115px !important;
   height:195px !important;
-  flex:0 0 auto;
-  aspect-ratio:auto !important;
+  flex-shrink:0;
+  flex-grow:0;
+  aspect-ratio: auto !important;
+}
+.final-row-wrapper .card-container.animate-final {
+  animation:finalArrange 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-/* ВАЖНО: тут плавная длительная анимация */
-.final-row-wrapper .card-container.animate-final{
-  animation: finalArrange 1.6s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-}
+.card-container.fade-out { animation:fadeOut 0.6s ease-out forwards; }
 
 @media (min-width:600px) {
+  .final-row-wrapper .card-container {
+    width:105px !important;
+    height:180px !important;
+  }
   .title { font-size:28px; }
   .grid { width:65vw; max-width:330px; gap:10px; }
-  .final-row-wrapper .card-container{ width:105px !important; height:180px !important; }
   .card:hover:not(.disabled) { transform:translateY(-15px) scale(1.05); }
   .card.flipped:hover:not(.disabled) { transform:rotateY(180deg) translateY(-15px) scale(1.05); }
 }
 .disabled { pointer-events:none; }
 </style>
 </head>
-
 <body>
 <div class="title">Выберите 3 карты</div>
 <div class="grid" id="grid"></div>
@@ -192,20 +180,20 @@ for (let i = 0; i < 9; i++) {
   const container = document.createElement('div');
   container.className = 'card-container';
   container.id = `card-${i}`;
-
+  
   const card = document.createElement('div');
   card.className = 'card';
-
+  
   const front = document.createElement('div');
   front.className = 'card-front';
-
+  
   const back = document.createElement('div');
   back.className = 'card-back';
-
+  
   card.appendChild(front);
   card.appendChild(back);
   container.appendChild(card);
-
+  
   containers.push(container);
   container.onclick = () => flipCard(card, container, i);
   grid.appendChild(container);
@@ -218,68 +206,75 @@ function getRandomCard() {
 function calculateOffset(cardIndex, centerIndex = 4) {
   const centerContainer = containers[centerIndex];
   const cardContainer = containers[cardIndex];
-
+  
   const centerRect = centerContainer.getBoundingClientRect();
   const cardRect = cardContainer.getBoundingClientRect();
-
+  
   const offsetX = centerRect.left - cardRect.left;
   const offsetY = centerRect.top - cardRect.top;
-
+  
   return { offsetX, offsetY };
 }
 
 function finalArrangement() {
   grid.style.opacity = '0';
-
+  
   const wrapper = document.createElement('div');
   wrapper.className = 'final-row-wrapper';
   document.body.appendChild(wrapper);
-
+  
   selectedIndices.forEach((index, pos) => {
     const container = containers[index];
     wrapper.appendChild(container);
-
-    // медленная спокойная волна
-    setTimeout(() => container.classList.add('animate-final'), pos * 250);
+    
+    setTimeout(() => {
+      container.classList.add('animate-final');
+    }, pos * 150);
   });
-
-  setTimeout(() => Telegram.WebApp.close(), 3800);
+  
+  setTimeout(() => {
+    Telegram.WebApp.close();
+  }, 3200);
 }
 
 function flipCard(cardEl, containerEl, index) {
   if (cardEl.classList.contains('disabled')) return;
   if (selectedCount === 3) return;
-
+  
   cardEl.classList.add('disabled');
-
+  
   const randomCard = getRandomCard();
   const backEl = cardEl.querySelector('.card-back');
   backEl.style.backgroundImage = `url('${randomCard}')`;
-
   Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
-
-  setTimeout(() => cardEl.classList.add('flipped'), 300);
-
+  
+  setTimeout(() => {
+    cardEl.classList.add('flipped');
+  }, 300);
+  
   setTimeout(() => {
     const offset = calculateOffset(index, 4);
     containerEl.style.setProperty('--centerOffsetX', `${offset.offsetX * 0.3}px`);
     containerEl.style.setProperty('--centerOffsetY', `${offset.offsetY * 0.3}px`);
     containerEl.classList.add('animate-zoom');
   }, 300);
-
+  
   setTimeout(() => {
     containerEl.classList.remove('animate-zoom');
     containerEl.classList.add('animate-back');
   }, 1100);
-
+  
   setTimeout(() => {
     containerEl.classList.remove('animate-back');
     cardEl.classList.remove('disabled');
-
     selectedCount++;
     selectedIndices.push(index);
-
-    if (selectedCount === 3) setTimeout(finalArrangement, 500);
+    
+    if (selectedCount === 3) {
+      setTimeout(() => {
+        finalArrangement();
+      }, 500);
+    }
   }, 1700);
 }
 
