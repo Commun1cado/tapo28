@@ -4,7 +4,6 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
-/* CSS очищен от лишних сдвигов */
 body { 
   margin:0; padding:0; 
   background:url('tarot-bg.jpg') center/cover fixed no-repeat; 
@@ -37,6 +36,7 @@ body {
   z-index: 10;
 }
 
+/* ЗАГОЛОВОК ФИНАЛЬНЫЙ */
 .final-title {
   font-size: 24px;
   font-weight: bold;
@@ -44,8 +44,7 @@ body {
   text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
   position: fixed;
   top: 50%;
-  left: 50%;
-  /* Текст строго по центру */
+  left: 50%; /* На мобилках - центр */
   transform: translate(-50%, -180px) translateZ(200px); 
   opacity: 0;
   pointer-events: none;
@@ -56,14 +55,24 @@ body {
   text-align: center;
 }
 
-/* ДЕСКТОП: Текст тоже сдвигаем вправо, чтобы он был над картами */
-@media (min-width: 600px) {
-  .final-title {
-    /* Добавляем 40px сдвига вправо для текста */
-    transform: translate(-50%, -220px) translateX(40px) translateZ(200px);
-  }
+/* НЕВИДИМЫЙ БЛОК-ЦЕЛЬ (куда летят карты) */
+.final-placeholder {
+  position: fixed;
+  top: 50%;
+  left: 50%; /* На мобилках - центр */
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 10px;
+  pointer-events: none;
+  visibility: hidden;
 }
 
+.final-placeholder-item {
+  width: 115px;
+  height: 195px;
+}
+
+/* Сетка карт */
 .grid { 
   display: grid; 
   grid-template-columns: repeat(3, 1fr); 
@@ -106,6 +115,7 @@ body {
   background-position: center;
 }
 
+/* Рубашка */
 .card-front {
   background-image: url('cards/card-back.jpg');
   background-color: #2a1a4a;
@@ -116,6 +126,7 @@ body {
   outline-offset: -4px; 
 }
 
+/* Лицо */
 .card-back {
   background-color: #1a1a1a;
   transform: rotateY(180deg);
@@ -142,21 +153,6 @@ body {
   pointer-events: none;
 }
 
-.final-placeholder {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* БЕЗ сдвигов в CSS, только центр */
-  display: flex;
-  gap: 10px;
-  pointer-events: none;
-  visibility: hidden;
-}
-.final-placeholder-item {
-  width: 115px;
-  height: 195px;
-}
-
 @media (max-height: 700px) {
   .grid {
     width: auto;
@@ -165,10 +161,26 @@ body {
   }
 }
 
+/* --- ИСПРАВЛЕНИЕ ДЛЯ ДЕСКТОПА --- */
 @media (min-width: 600px) and (min-height: 800px) {
   .grid { max-width: 400px; gap: 15px; }
   .final-placeholder-item { width: 130px; height: 215px; }
-  .title, .final-title { font-size: 32px; }
+  .title { font-size: 32px; }
+  
+  /* 
+     СДВИГАЕМ "МЕСТО НАЗНАЧЕНИЯ" ВПРАВО 
+     Вместо left: 50% ставим 52% (это примерно +30-40px на Full HD)
+  */
+  .final-placeholder {
+    left: 52%; 
+  }
+  
+  /* Заголовок тоже туда же */
+  .final-title { 
+    font-size: 32px;
+    left: 52%; 
+    transform: translate(-50%, -220px) translateZ(200px); 
+  }
 }
 
 .disabled { pointer-events: none; }
@@ -190,6 +202,7 @@ body {
 </div>
 
 <script>
+// Стандартный JS без хаков
 const allCards = [
   'cards/00-TheFool.jpg', 'cards/01-TheMagician.jpg', 'cards/02-TheHighPriestess.jpg',
   'cards/03-TheEmpress.jpg', 'cards/04-TheEmperor.jpg', 'cards/05-TheHierophant.jpg',
@@ -279,18 +292,13 @@ function finalArrangement() {
   const placeholders = finalPlaceholder.querySelectorAll('.final-placeholder-item');
   const finalRects = Array.from(placeholders).map(p => p.getBoundingClientRect());
 
-  // ПРОВЕРЯЕМ, ЕСЛИ ЭТО ДЕСКТОП (>600px)
-  const isDesktop = window.innerWidth > 600;
-  // Добавляем 40px сдвига вправо, если десктоп
-  const extraShiftX = isDesktop ? 40 : 0; 
-
   selectedIndices.forEach((index, i) => {
     const container = containers[index];
     const rect = container.getBoundingClientRect();
     const finalRect = finalRects[i];
 
-    // Добавляем extraShiftX к deltaX
-    const deltaX = (finalRect.left - rect.left) + extraShiftX;
+    // JS сам найдет новые координаты, потому что мы сдвинули CSS placeholder!
+    const deltaX = finalRect.left - rect.left;
     const deltaY = finalRect.top - rect.top;
     
     const scaleX = finalRect.width / rect.width;
