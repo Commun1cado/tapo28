@@ -72,7 +72,7 @@ body {
   box-shadow:inset 0 0 20px rgba(0,0,0,0.4);
 }
 
-/* выбор — зум к центру + возврат */
+/* Выбор — зум к центру + возврат */
 @keyframes zoomToCenter {
   0% { transform:scale(1); z-index:1000; }
   50% { transform:scale(1.5); z-index:1000; }
@@ -85,30 +85,28 @@ body {
 .card-container.animate-zoom { animation:zoomToCenter 0.8s ease-out forwards; }
 .card-container.animate-back { animation:moveBack 0.6s ease-in forwards; }
 
-/* ---- МАГИЧЕСКИЙ ПОРТАЛ: финальная анимация ---- */
+/* ПЛАВНОЕ "ДЫХАНИЕ" (спокойно, залипательно) */
 @keyframes finalArrange {
   0% {
-    transform: rotate(-35deg) scale(0.15);
+    transform: translateY(30px) scale(0.85);
     opacity: 0;
-    filter: hue-rotate(180deg) blur(10px) brightness(2);
+    filter: blur(4px) brightness(1.05);
   }
-  55% {
-    transform: rotate(6deg) scale(1.18);
-    opacity: 1;
-    filter: hue-rotate(30deg) blur(0px) brightness(1.25);
+  40% {
+    transform: translateY(-8px) scale(0.98);
+    opacity: 0.75;
+    filter: blur(1px) brightness(1.08);
+  }
+  70% {
+    transform: translateY(3px) scale(1.02);
+    opacity: 0.95;
+    filter: blur(0px) brightness(1.02);
   }
   100% {
-    transform: rotate(0deg) scale(0.9);
+    transform: translateY(0px) scale(0.9);
     opacity: 1;
-    filter: hue-rotate(0deg) blur(0px) brightness(1);
+    filter: blur(0px) brightness(1);
   }
-}
-
-/* Кольцо портала под картой */
-@keyframes portalRing {
-  0%   { transform: translate(-50%, -50%) scale(0.25) rotate(0deg);   opacity:0; filter: blur(10px) brightness(2); }
-  55%  { transform: translate(-50%, -50%) scale(1.10) rotate(220deg); opacity:1; filter: blur(2px) brightness(1.5); }
-  100% { transform: translate(-50%, -50%) scale(0.95) rotate(360deg); opacity:0.85; filter: blur(0px) brightness(1.1); }
 }
 
 @keyframes fadeOut {
@@ -129,42 +127,17 @@ body {
   align-items:center;
   justify-content:center;
 }
-
 .final-row-wrapper .card-container{
-  position:relative !important;  /* нужно для ::before */
+  position:static !important;
   width:115px !important;
   height:195px !important;
   flex:0 0 auto;
   aspect-ratio:auto !important;
 }
 
-.final-row-wrapper .card-container::before{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:52%;
-  width:160%;
-  height:90%;
-  transform:translate(-50%, -50%);
-  border-radius:999px;
-  z-index:-1;
-  background:
-    radial-gradient(circle at 50% 50%,
-      rgba(170,110,255,0.65) 0%,
-      rgba(110,230,255,0.35) 25%,
-      rgba(255,255,255,0.12) 45%,
-      rgba(0,0,0,0) 70%);
-  box-shadow:
-    0 0 18px rgba(160,120,255,0.55),
-    0 0 40px rgba(110,230,255,0.25);
-  opacity:0;
-}
-
+/* ВАЖНО: тут плавная длительная анимация */
 .final-row-wrapper .card-container.animate-final{
-  animation:finalArrange 1.05s cubic-bezier(0.22, 1.2, 0.36, 1) forwards;
-}
-.final-row-wrapper .card-container.animate-final::before{
-  animation:portalRing 1.05s cubic-bezier(0.22, 1.2, 0.36, 1) forwards;
+  animation: finalArrange 1.6s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
 @media (min-width:600px) {
@@ -174,7 +147,6 @@ body {
   .card:hover:not(.disabled) { transform:translateY(-15px) scale(1.05); }
   .card.flipped:hover:not(.disabled) { transform:rotateY(180deg) translateY(-15px) scale(1.05); }
 }
-
 .disabled { pointer-events:none; }
 </style>
 </head>
@@ -267,11 +239,11 @@ function finalArrangement() {
     const container = containers[index];
     wrapper.appendChild(container);
 
-    // волна появления (портал)
-    setTimeout(() => container.classList.add('animate-final'), pos * 170);
+    // медленная спокойная волна
+    setTimeout(() => container.classList.add('animate-final'), pos * 250);
   });
 
-  setTimeout(() => Telegram.WebApp.close(), 3400);
+  setTimeout(() => Telegram.WebApp.close(), 3800);
 }
 
 function flipCard(cardEl, containerEl, index) {
