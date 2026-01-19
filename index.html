@@ -141,6 +141,38 @@ body {
   height: 195px;
 }
 
+.decode-button {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: linear-gradient(135deg, #6a0dad 0%, #8b3dbd 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 16px 40px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(106, 13, 173, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 10000;
+  white-space: nowrap;
+}
+
+.decode-button.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: all;
+}
+
+.decode-button:active {
+  transform: translateX(-50%) translateY(2px) scale(0.98);
+  box-shadow: 0 4px 10px rgba(106, 13, 173, 0.3);
+}
+
 @media (max-height: 700px) {
   .grid {
     width: auto;
@@ -154,6 +186,7 @@ body {
   .final-placeholder-item { width: 130px; height: 215px; }
   .title, .final-title { font-size: 32px; }
   .final-title { transform: translate(-50%, -220px) translateZ(200px); }
+  .decode-button { font-size: 20px; padding: 18px 50px; }
 }
 
 .disabled { pointer-events: none; }
@@ -173,6 +206,8 @@ body {
   <div class="final-placeholder-item"></div>
   <div class="final-placeholder-item"></div>
 </div>
+
+<button class="decode-button" id="decodeButton">🔮 Получить расшифровку</button>
 
 <script>
 const allCards = [
@@ -204,9 +239,11 @@ const allCards = [
 
 const grid = document.getElementById('grid');
 const finalPlaceholder = document.getElementById('finalPlaceholder');
+const decodeButton = document.getElementById('decodeButton');
 const containers = [];
 let selectedCount = 0;
 let selectedIndices = [];
+let selectedCards = [];
 
 for (let i = 0; i < 9; i++) {
   const container = document.createElement('div');
@@ -261,16 +298,13 @@ function finalArrangement() {
     }
   });
 
-  // Используем центр экрана напрямую вместо плейсхолдера
   const viewportCenterX = window.innerWidth / 2;
   const viewportCenterY = window.innerHeight / 2;
 
-  // Размеры финальных карт
   const finalCardWidth = window.innerWidth >= 600 ? 130 : 115;
   const finalCardHeight = window.innerWidth >= 600 ? 215 : 195;
   const gap = 10;
 
-  // Позиции трех карт по центру
   const totalWidth = finalCardWidth * 3 + gap * 2;
   const startX = viewportCenterX - totalWidth / 2;
 
@@ -278,15 +312,12 @@ function finalArrangement() {
     const container = containers[index];
     const rect = container.getBoundingClientRect();
 
-    // Целевая позиция каждой карты
     const targetCenterX = startX + finalCardWidth * i + gap * i + finalCardWidth / 2;
     const targetCenterY = viewportCenterY;
 
-    // Текущий центр карты
     const currentCenterX = rect.left + rect.width / 2;
     const currentCenterY = rect.top + rect.height / 2;
 
-    // Смещение
     const deltaX = targetCenterX - currentCenterX;
     const deltaY = targetCenterY - currentCenterY;
     
@@ -297,7 +328,9 @@ function finalArrangement() {
     container.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`;
   });
 
-  setTimeout(() => Telegram.WebApp.close(), 3500);
+  setTimeout(() => {
+    decodeButton.classList.add('show');
+  }, 1000);
 }
 
 function flipCard(cardEl, containerEl, index) {
@@ -332,10 +365,19 @@ function flipCard(cardEl, containerEl, index) {
 
     selectedCount++;
     selectedIndices.push(index);
+    selectedCards.push(randomCard);
 
     if (selectedCount === 3) setTimeout(finalArrangement, 500);
   }, 1700);
 }
+
+decodeButton.addEventListener('click', () => {
+  Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+  // Здесь можно отправить выбранные карты на сервер
+  console.log('Выбранные карты:', selectedCards);
+  // Например: переход на страницу с расшифровкой
+  // window.location.href = 'decode.html?cards=' + selectedCards.join(',');
+});
 
 Telegram.WebApp.ready();
 Telegram.WebApp.expand();
