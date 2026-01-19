@@ -2,95 +2,99 @@
 <html>
 <head>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
 body { 
-  margin:0; padding:10px; 
-  background:url('tarot-bg.jpg') center/cover fixed; 
+  margin:0; padding:0; 
+  background:url('tarot-bg.jpg') center/cover fixed no-repeat; 
   font-family:system-ui; 
   display:flex; flex-direction:column; 
   align-items:center; justify-content:center; 
-  gap:20px; min-height:100vh;
-  padding-top: 60px;
-  padding-bottom: 80px;
+  height: 100vh;      /* Строго высота экрана */
+  overflow: hidden;   /* Запрет скролла */
   box-sizing: border-box;
 }
 
-/* Старый заголовок (вверху) */
+/* Старый заголовок */
 .title {
-  font-size:24px;
-  font-weight:bold;
-  color:#000;
-  text-shadow:2px 2px 4px rgba(255,255,255,0.5);
-  margin-top:20px;
-  transition: opacity 0.5s ease; /* Быстрое исчезновение */
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+  text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
+  margin-bottom: 20px; /* Отступ снизу до карт */
+  transition: opacity 0.5s ease;
+  flex-shrink: 0; /* Чтобы заголовок не сжимался */
 }
 
-/* Новый заголовок (над картами) */
+/* Новый заголовок */
 .final-title {
-  font-size:24px;
-  font-weight:bold;
-  color:#000;
-  text-shadow:2px 2px 4px rgba(255,255,255,0.5);
-  position: fixed;   /* Фиксируем относительно экрана */
-  top: 35%;          /* Прямо над центром (карты в центре = 50%) */
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+  text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
+  position: fixed;
+  top: 35%;
   left: 50%;
-  transform: translate(-50%, -100%); /* Центрируем и чуть поднимаем */
+  transform: translate(-50%, -100%);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 1s ease 0.5s; /* Появляется плавнее и с задержкой */
-  z-index: 3000;     /* Поверх всего */
+  transition: opacity 1s ease 0.5s;
+  z-index: 3000;
 }
 
 .grid { 
-  display:grid; 
-  grid-template-columns:repeat(3, 1fr); 
-  gap:10px;
-  width:85vw;
-  max-width:380px;
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 10px;
+  width: 90vw;       /* Ширина на мобильных */
+  max-width: 360px;  /* Макс ширина сетки */
+  /* Адаптивность по высоте: если экран низкий, уменьшаем сетку */
+  max-height: 75vh;  
+  aspect-ratio: 3 / 4; /* Примерное соотношение сторон сетки 3x3 */
 }
+
+/* Контейнер карты - теперь резиновый */
 .card-container {
-  perspective:1000px;
-  width:100%;
-  aspect-ratio:295/510;
-  position:relative;
+  perspective: 1000px;
+  width: 100%;
+  height: 100%; /* Заполняет ячейку грида */
+  position: relative;
   transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
+
 .card {
-  width:100%;
-  height:100%;
-  position:relative;
-  transition:transform 0.6s;
-  transform-style:preserve-3d;
-  cursor:pointer;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  cursor: pointer;
 }
-.card.flipped { transform:rotateY(180deg); }
+.card.flipped { transform: rotateY(180deg); }
 .card-front, .card-back {
-  position:absolute;
-  width:100%;
-  height:100%;
-  backface-visibility:hidden;
-  border-radius:12px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.5);
-  border:2px solid rgba(255,255,255,0.3);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background-size:cover;
-  background-repeat:no-repeat;
-  background-position:center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 8px; /* Чуть меньше радиус */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 .card-front {
-  background-image:url('cards/card-back.jpg');
-  background-color:#2a1a4a;
-  background-size:contain;
-  background-repeat:no-repeat;
-  background-position:center;
+  background-image: url('cards/card-back.jpg');
+  background-color: #2a1a4a;
+  background-size: contain;
 }
 .card-back {
-  background-color:#1a1a1a;
-  transform:rotateY(180deg);
-  box-shadow:inset 0 0 20px rgba(0,0,0,0.4);
+  background-color: #1a1a1a;
+  transform: rotateY(180deg);
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
 }
 
 @keyframes zoomToCenter {
@@ -122,19 +126,21 @@ body {
   visibility: hidden;
 }
 .final-placeholder-item {
-  width: 115px;
-  height: 195px;
+  width: 100px; /* Чуть меньше для надежности */
+  height: 170px;
 }
 
-@media (min-width:600px) {
-  .title, .final-title { font-size:28px; }
-  .final-title { top: 38%; } /* Чуть ниже на десктопе */
-  .grid { width:65vw; max-width:330px; gap:10px; }
-  .final-placeholder-item { width: 105px; height: 180px; }
-  .card:hover:not(.disabled) { transform:translateY(-15px) scale(1.05); }
-  .card.flipped:hover:not(.disabled) { transform:rotateY(180deg) translateY(-15px) scale(1.05); }
+/* Медиа-запрос для десктопа/больших экранов */
+@media (min-height: 800px) and (min-width: 600px) {
+  .grid { 
+    max-width: 400px; /* Можно чуть шире на больших экранах */
+    gap: 15px;
+  }
+  .title, .final-title { font-size: 32px; }
+  .final-placeholder-item { width: 120px; height: 200px; }
 }
-.disabled { pointer-events:none; }
+
+.disabled { pointer-events: none; }
 </style>
 </head>
 
@@ -150,6 +156,7 @@ body {
 </div>
 
 <script>
+// ... (Весь JS код остается ТЕМ ЖЕ, без изменений) ...
 const allCards = [
   'cards/00-TheFool.jpg', 'cards/01-TheMagician.jpg', 'cards/02-TheHighPriestess.jpg',
   'cards/03-TheEmpress.jpg', 'cards/04-TheEmperor.jpg', 'cards/05-TheHierophant.jpg',
@@ -224,22 +231,18 @@ function calculateOffset(cardIndex, centerIndex = 4) {
 }
 
 function finalArrangement() {
-  // 1. Скрываем "Выберите 3 карты" СРАЗУ (0 задержка)
   const oldTitle = document.querySelector('.title');
   oldTitle.style.opacity = '0';
   
-  // 2. Показываем "Карты выбраны"
   const newTitle = document.querySelector('.final-title');
-  newTitle.style.opacity = '1'; // Появится с задержкой 0.5s (из CSS)
+  newTitle.style.opacity = '1';
 
-  // 3. Скрываем невыбранные
   containers.forEach((container, index) => {
     if (!selectedIndices.includes(index)) {
       container.classList.add('fade-out');
     }
   });
 
-  // 4. Полет карт
   const placeholders = finalPlaceholder.querySelectorAll('.final-placeholder-item');
   const finalRects = Array.from(placeholders).map(p => p.getBoundingClientRect());
 
@@ -252,9 +255,11 @@ function finalArrangement() {
     const deltaY = finalRect.top - rect.top;
     
     const scaleX = finalRect.width / rect.width;
+    const scaleY = finalRect.height / rect.height; // Учитываем и высоту для точного масштаба
 
     container.style.zIndex = 2000 + i;
-    container.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX})`;
+    // Используем scaleY тоже, чтобы пропорции не ехали если ячейки разные
+    container.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`;
   });
 
   setTimeout(() => Telegram.WebApp.close(), 3500);
