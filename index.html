@@ -36,19 +36,22 @@ body {
   z-index: 10;
 }
 
+/* ФИНАЛЬНЫЙ ЗАГОЛОВОК - теперь он всегда над центром */
 .final-title {
   font-size: 24px;
   font-weight: bold;
   color: #000;
   text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
   position: fixed;
-  top: 35%;
+  top: 50%;         /* Центр экрана */
   left: 50%;
-  transform: translate(-50%, -100%) translateZ(100px); /* 3D подъем */
+  /* Сдвигаем влево на 50% (центровка) и ВВЕРХ на 180px от центра */
+  transform: translate(-50%, -180px) translateZ(200px); 
   opacity: 0;
   pointer-events: none;
   transition: opacity 1s ease 0.5s;
-  z-index: 9999; /* Самый высокий слой */
+  z-index: 9999;
+  white-space: nowrap; /* Чтобы не переносился */
 }
 
 .grid { 
@@ -57,7 +60,6 @@ body {
   gap: 10px;
   width: 90vw;
   max-width: 360px;
-  /* Пропорции всей сетки, чтобы карты были ~ 300x510 */
   aspect-ratio: 3 / 4.8; 
   flex-shrink: 1;
 }
@@ -93,14 +95,12 @@ body {
   justify-content: center;
   background-repeat: no-repeat;
   background-position: center;
-  /* Важно: фон не залезает под скругления */
   background-clip: padding-box; 
 }
 
 .card-front {
   background-image: url('cards/card-back.jpg');
   background-color: #2a1a4a;
-  /* Чуть меньше 100%, чтобы не резалось краями */
   background-size: 96% auto; 
 }
 
@@ -108,7 +108,6 @@ body {
   background-color: #1a1a1a;
   transform: rotateY(180deg);
   box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
-  /* Картинка таро тоже чуть меньше, чтобы видеть всю кайму */
   background-size: 96% 96%; 
 }
 
@@ -134,7 +133,7 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); /* Карты точно по центру */
   display: flex;
   gap: 10px;
   pointer-events: none;
@@ -153,10 +152,13 @@ body {
   }
 }
 
+/* Увеличиваем масштаб на больших экранах */
 @media (min-width: 600px) and (min-height: 800px) {
   .grid { max-width: 400px; gap: 15px; }
-  .final-placeholder-item { width: 120px; height: 200px; }
+  .final-placeholder-item { width: 130px; height: 215px; }
   .title, .final-title { font-size: 32px; }
+  /* Если карты больше, поднимаем заголовок выше */
+  .final-title { transform: translate(-50%, -220px) translateZ(200px); }
 }
 
 .disabled { pointer-events: none; }
