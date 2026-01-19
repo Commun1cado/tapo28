@@ -4,6 +4,17 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
+/* НАСТРОЙКА СДВИГА ДЛЯ ДЕСКТОПА */
+:root {
+  --finalShiftX: 0px; /* На мобильных сдвига нет */
+}
+
+@media (min-width: 600px) {
+  :root {
+    --finalShiftX: 18px; /* На десктопе сдвигаем всё вправо на 18px */
+  }
+}
+
 body { 
   margin:0; padding:0; 
   background:url('tarot-bg.jpg') center/cover fixed no-repeat; 
@@ -45,8 +56,8 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  /* Сдвигаем влево на 50% и ВВЕРХ на 180px */
-  transform: translate(-50%, -180px) translateZ(200px); 
+  /* Центрируем + поднимаем вверх + сдвигаем вправо (для десктопа) */
+  transform: translate(-50%, -180px) translateX(var(--finalShiftX)) translateZ(200px); 
   opacity: 0;
   pointer-events: none;
   transition: opacity 1s ease 0.5s;
@@ -82,6 +93,7 @@ body {
 }
 .card.flipped { transform: rotateY(180deg); }
 
+/* ОБЩИЕ СТИЛИ */
 .card-front, .card-back {
   position: absolute;
   width: 100%;
@@ -89,26 +101,38 @@ body {
   backface-visibility: hidden;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   background-repeat: no-repeat;
   background-position: center;
-  background-clip: padding-box; 
 }
 
+/* РУБАШКА (FRONT) - ИДЕАЛЬНАЯ ПОДГОНКА */
 .card-front {
   background-image: url('cards/card-back.jpg');
-  background-color: #2a1a4a;
-  background-size: 96% auto; 
+  background-color: #2a1a4a; /* Цвет рамки */
+  
+  /* Картинка заполняет всё доступное место */
+  background-size: cover; 
+  /* Рисуется только внутри content-box */
+  background-clip: content-box;
+  
+  /* Прозрачная граница создает отступ (каёмку) в 4px */
+  border: 4px solid transparent; 
+  
+  /* Доп. обводка, чтобы граница была четкой (опционально) */
+  outline: 1px solid rgba(255,255,255,0.3);
+  outline-offset: -4px; /* Сдвигаем outline внутрь */
 }
 
+/* ЛИЦО (BACK) */
 .card-back {
   background-color: #1a1a1a;
   transform: rotateY(180deg);
   box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
   background-size: 96% 96%; 
+  border: 1px solid rgba(255,255,255,0.3);
 }
 
 @keyframes zoomToCenter {
@@ -134,7 +158,8 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* По умолчанию ровно по центру */
+  /* Применяем тот же сдвиг --finalShiftX */
+  transform: translate(-50%, -50%) translateX(var(--finalShiftX));
   display: flex;
   gap: 10px;
   pointer-events: none;
@@ -159,15 +184,8 @@ body {
   .final-placeholder-item { width: 130px; height: 215px; }
   .title, .final-title { font-size: 32px; }
   
-  /* Поднимаем заголовок выше */
-  .final-title { transform: translate(-50%, -220px) translateZ(200px); }
-  
-  /* СДВИГАЕМ КАРТЫ ВПРАВО на десктопе */
-  .final-placeholder {
-    /* translate(-45%, ...) вместо -50% сдвинет блок вправо на 5% от его ширины */
-    /* Или можно добавить марджин слева */
-    margin-left: 15px; 
-  }
+  /* Поднимаем заголовок выше, т.к. карты больше */
+  .final-title { transform: translate(-50%, -220px) translateX(var(--finalShiftX)) translateZ(200px); }
 }
 
 .disabled { pointer-events: none; }
