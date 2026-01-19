@@ -67,6 +67,9 @@ body {
   width: 100%;
   height: 100%;
   position: relative;
+}
+
+.card-container.final-moving {
   transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
@@ -124,6 +127,7 @@ body {
   opacity: 0;
   transform: scale(0.8);
   pointer-events: none;
+  transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .final-placeholder {
@@ -261,24 +265,30 @@ function finalArrangement() {
     }
   });
 
-  finalPlaceholder.style.visibility = 'visible';
-  
-  const placeholders = finalPlaceholder.querySelectorAll('.final-placeholder-item');
-  const finalRects = Array.from(placeholders).map(p => p.getBoundingClientRect());
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      finalPlaceholder.style.visibility = 'visible';
+      
+      const placeholders = finalPlaceholder.querySelectorAll('.final-placeholder-item');
+      const finalRects = Array.from(placeholders).map(p => p.getBoundingClientRect());
 
-  selectedIndices.forEach((index, i) => {
-    const container = containers[index];
-    const rect = container.getBoundingClientRect();
-    const finalRect = finalRects[i];
+      selectedIndices.forEach((index, i) => {
+        const container = containers[index];
+        container.classList.add('final-moving');
+        
+        const rect = container.getBoundingClientRect();
+        const finalRect = finalRects[i];
 
-    const deltaX = finalRect.left - rect.left;
-    const deltaY = finalRect.top - rect.top;
-    
-    const scaleX = finalRect.width / rect.width;
-    const scaleY = finalRect.height / rect.height;
+        const deltaX = finalRect.left - rect.left;
+        const deltaY = finalRect.top - rect.top;
+        
+        const scaleX = finalRect.width / rect.width;
+        const scaleY = finalRect.height / rect.height;
 
-    container.style.zIndex = 2000 + i;
-    container.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`;
+        container.style.zIndex = 2000 + i;
+        container.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`;
+      });
+    });
   });
 
   setTimeout(() => Telegram.WebApp.close(), 3500);
