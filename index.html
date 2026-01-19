@@ -15,12 +15,20 @@ body {
   padding-bottom: 80px;
   box-sizing: border-box;
 }
-.title {
+.title, .final-title {
   font-size:24px;
   font-weight:bold;
   color:#000;
   text-shadow:2px 2px 4px rgba(255,255,255,0.5);
   margin-top:20px;
+  position: absolute; /* Чтобы они были в одном месте */
+  top: 40px;          /* Фиксируем сверху */
+  transition: opacity 0.8s ease; /* Плавное появление/исчезновение */
+}
+/* Скрытый заголовок "Карты выбраны" */
+.final-title {
+  opacity: 0;
+  pointer-events: none;
 }
 .grid { 
   display:grid; 
@@ -34,7 +42,7 @@ body {
   width:100%;
   aspect-ratio:295/510;
   position:relative;
-  transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); /* Плавный переход для полета */
+  transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
 .card {
   width:100%;
@@ -85,14 +93,12 @@ body {
 .card-container.animate-zoom { animation:zoomToCenter 0.8s ease-out forwards; }
 .card-container.animate-back { animation:moveBack 0.6s ease-in forwards; }
 
-/* Анимация исчезновения невыбранных карт */
 .fade-out {
   opacity: 0;
   transform: scale(0.8);
   pointer-events: none;
 }
 
-/* Контейнер для финального ряда (невидимый, только для позиционирования) */
 .final-placeholder {
   position: fixed;
   top: 50%;
@@ -101,7 +107,7 @@ body {
   display: flex;
   gap: 10px;
   pointer-events: none;
-  visibility: hidden; /* Скрыт, нужен только для расчета координат */
+  visibility: hidden;
 }
 .final-placeholder-item {
   width: 115px;
@@ -109,7 +115,7 @@ body {
 }
 
 @media (min-width:600px) {
-  .title { font-size:28px; }
+  .title, .final-title { font-size:28px; top: 50px; }
   .grid { width:65vw; max-width:330px; gap:10px; }
   .final-placeholder-item { width: 105px; height: 180px; }
   .card:hover:not(.disabled) { transform:translateY(-15px) scale(1.05); }
@@ -121,9 +127,9 @@ body {
 
 <body>
 <div class="title">Выберите 3 карты</div>
+<div class="final-title">Карты выбраны</div>
 <div class="grid" id="grid"></div>
 
-<!-- Скрытый контейнер для расчета финальных позиций -->
 <div class="final-placeholder" id="finalPlaceholder">
   <div class="final-placeholder-item"></div>
   <div class="final-placeholder-item"></div>
@@ -205,9 +211,12 @@ function calculateOffset(cardIndex, centerIndex = 4) {
 }
 
 function finalArrangement() {
-  // 1. Скрываем заголовок
-  document.querySelector('.title').style.opacity = '0';
-  document.querySelector('.title').style.transition = 'opacity 0.5s';
+  // 1. Меняем заголовки
+  document.querySelector('.title').style.opacity = '0'; // Скрываем "Выберите 3 карты"
+  
+  setTimeout(() => {
+     document.querySelector('.final-title').style.opacity = '1'; // Показываем "Карты выбраны"
+  }, 200); // Небольшая задержка для плавности
 
   // 2. Скрываем невыбранные карты
   containers.forEach((container, index) => {
@@ -216,26 +225,21 @@ function finalArrangement() {
     }
   });
 
-  // 3. Получаем координаты финальных мест
+  // 3. Перемещаем карты в центр
   const placeholders = finalPlaceholder.querySelectorAll('.final-placeholder-item');
   const finalRects = Array.from(placeholders).map(p => p.getBoundingClientRect());
 
-  // 4. Плавно перемещаем выбранные карты
   selectedIndices.forEach((index, i) => {
     const container = containers[index];
     const rect = container.getBoundingClientRect();
     const finalRect = finalRects[i];
 
-    // Вычисляем смещение
     const deltaX = finalRect.left - rect.left;
     const deltaY = finalRect.top - rect.top;
     
-    // Вычисляем масштаб (чтобы карта стала нужного размера)
     const scaleX = finalRect.width / rect.width;
-    const scaleY = finalRect.height / rect.height; // Обычно scaleX = scaleY
 
-    // Применяем трансформацию: карты летят на свои места
-    container.style.zIndex = 2000 + i; // Чтобы были поверх всего
+    container.style.zIndex = 2000 + i;
     container.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX})`;
   });
 
