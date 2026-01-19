@@ -67,9 +67,6 @@ body {
   width: 100%;
   height: 100%;
   position: relative;
-}
-
-.card-container.final-moving {
   transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
@@ -127,7 +124,6 @@ body {
   opacity: 0;
   transform: scale(0.8);
   pointer-events: none;
-  transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .final-placeholder {
@@ -138,7 +134,7 @@ body {
   display: flex;
   gap: 10px;
   pointer-events: none;
-  visibility: hidden;
+  opacity: 0;
 }
 .final-placeholder-item {
   width: 115px;
@@ -265,30 +261,40 @@ function finalArrangement() {
     }
   });
 
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      finalPlaceholder.style.visibility = 'visible';
-      
-      const placeholders = finalPlaceholder.querySelectorAll('.final-placeholder-item');
-      const finalRects = Array.from(placeholders).map(p => p.getBoundingClientRect());
+  // Используем центр экрана напрямую вместо плейсхолдера
+  const viewportCenterX = window.innerWidth / 2;
+  const viewportCenterY = window.innerHeight / 2;
 
-      selectedIndices.forEach((index, i) => {
-        const container = containers[index];
-        container.classList.add('final-moving');
-        
-        const rect = container.getBoundingClientRect();
-        const finalRect = finalRects[i];
+  // Размеры финальных карт
+  const finalCardWidth = window.innerWidth >= 600 ? 130 : 115;
+  const finalCardHeight = window.innerWidth >= 600 ? 215 : 195;
+  const gap = 10;
 
-        const deltaX = finalRect.left - rect.left;
-        const deltaY = finalRect.top - rect.top;
-        
-        const scaleX = finalRect.width / rect.width;
-        const scaleY = finalRect.height / rect.height;
+  // Позиции трех карт по центру
+  const totalWidth = finalCardWidth * 3 + gap * 2;
+  const startX = viewportCenterX - totalWidth / 2;
 
-        container.style.zIndex = 2000 + i;
-        container.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`;
-      });
-    });
+  selectedIndices.forEach((index, i) => {
+    const container = containers[index];
+    const rect = container.getBoundingClientRect();
+
+    // Целевая позиция каждой карты
+    const targetCenterX = startX + finalCardWidth * i + gap * i + finalCardWidth / 2;
+    const targetCenterY = viewportCenterY;
+
+    // Текущий центр карты
+    const currentCenterX = rect.left + rect.width / 2;
+    const currentCenterY = rect.top + rect.height / 2;
+
+    // Смещение
+    const deltaX = targetCenterX - currentCenterX;
+    const deltaY = targetCenterY - currentCenterY;
+    
+    const scaleX = finalCardWidth / rect.width;
+    const scaleY = finalCardHeight / rect.height;
+
+    container.style.zIndex = 2000 + i;
+    container.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`;
   });
 
   setTimeout(() => Telegram.WebApp.close(), 3500);
