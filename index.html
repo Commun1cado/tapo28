@@ -309,8 +309,8 @@ function finalArrangement() {
   const totalWidth = finalCardWidth * 3 + gap * 2;
   const startX = viewportCenterX - totalWidth / 2;
 
-  // Смещение кнопки вниз на десктопе через сдвиг карт вверх
-  const cardOffsetY = window.innerWidth >= 600 ? -30 : 0;
+  // На десктопе сдвигаем карты ВЫШЕ, чтобы кнопка была ниже
+  const cardOffsetY = window.innerWidth >= 600 ? -60 : 0;
 
   selectedIndices.forEach((index, i) => {
     const container = containers[index];
