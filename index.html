@@ -395,6 +395,11 @@ decodeButton.addEventListener('click', () => {
     cards: selectedCards,
     action: 'cards_selected'
   }));
+  
+  // Закрываем Mini App через небольшую задержку, чтобы данные успели отправиться
+  setTimeout(() => {
+    Telegram.WebApp.close();
+  }, 100);
 });
 
 Telegram.WebApp.ready();
