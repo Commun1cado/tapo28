@@ -397,6 +397,15 @@ function flipCard(cardEl, containerEl, index) {
 decodeButton.addEventListener('click', () => {
   Telegram.WebApp.HapticFeedback.impactOccurred('medium');
   console.log('Выбранные карты:', selectedCards);
+  
+  // Отправляем данные обратно в бот
+  Telegram.WebApp.sendData(JSON.stringify({
+    cards: selectedCards,
+    action: 'cards_selected'
+  }));
+  
+  // Закрываем Mini App
+  Telegram.WebApp.close();
 });
 
 Telegram.WebApp.ready();
