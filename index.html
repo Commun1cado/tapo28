@@ -254,7 +254,7 @@ const containers = [];
 let selectedCount = 0;
 let selectedIndices = [];
 let selectedCards = [];
-let usedCards = []; // Массив уже использованных карт
+let usedCards = [];
 
 for (let i = 0; i < 9; i++) {
   const container = document.createElement('div');
@@ -280,16 +280,10 @@ for (let i = 0; i < 9; i++) {
 }
 
 function getRandomCard() {
-  // Фильтруем карты, исключая уже использованные
   const availableCards = allCards.filter(card => !usedCards.includes(card));
-  
-  // Выбираем случайную из доступных
   const randomIndex = Math.floor(Math.random() * availableCards.length);
   const selectedCard = availableCards[randomIndex];
-  
-  // Добавляем в использованные
   usedCards.push(selectedCard);
-  
   return selectedCard;
 }
 
@@ -329,12 +323,10 @@ function finalArrangement() {
   const totalWidth = finalCardWidth * 3 + gap * 2;
   const startX = viewportCenterX - totalWidth / 2;
 
-  // Сортируем по порядку выбора, а не по индексу в сетке
   selectedIndices.forEach((gridIndex, clickOrder) => {
     const container = containers[gridIndex];
     const rect = container.getBoundingClientRect();
 
-    // clickOrder: 0 = первая кликнутая, 1 = вторая, 2 = третья
     const targetCenterX = startX + finalCardWidth * clickOrder + gap * clickOrder + finalCardWidth / 2;
     const targetCenterY = viewportCenterY;
 
@@ -403,9 +395,6 @@ decodeButton.addEventListener('click', () => {
     cards: selectedCards,
     action: 'cards_selected'
   }));
-  
-  // Закрываем Mini App
-  Telegram.WebApp.close();
 });
 
 Telegram.WebApp.ready();
