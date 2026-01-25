@@ -317,6 +317,8 @@ function finalArrangement() {
   oldTitle.style.opacity = '0';
   
   const newTitle = document.querySelector('.final-title');
+  // Исправляем окончание для финального заголовка
+  newTitle.innerText = limit === 1 ? 'Ваша карта:' : 'Ваши карты:';
   newTitle.style.opacity = '1';
 
   containers.forEach((container, index) => {
