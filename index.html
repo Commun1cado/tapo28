@@ -251,10 +251,16 @@ const grid = document.getElementById('grid');
 const finalPlaceholder = document.getElementById('finalPlaceholder');
 const decodeButton = document.getElementById('decodeButton');
 const containers = [];
+const urlParams = new URLSearchParams(window.location.search);
+const limit = parseInt(urlParams.get('limit')) || 3;
 let selectedCount = 0;
 let selectedIndices = [];
 let selectedCards = [];
-let usedCards = [];
+let usedCards = []; // Массив уже использованных карт
+
+// Определяем окончание (1 карту, 3 карты)
+const cardWord = limit === 1 ? 'карту' : 'карты';
+document.querySelector('.title').innerText = `Выберите ${limit} ${cardWord}`;
 
 for (let i = 0; i < 9; i++) {
   const container = document.createElement('div');
@@ -280,10 +286,16 @@ for (let i = 0; i < 9; i++) {
 }
 
 function getRandomCard() {
+  // Фильтруем карты, исключая уже использованные
   const availableCards = allCards.filter(card => !usedCards.includes(card));
+  
+  // Выбираем случайную из доступных
   const randomIndex = Math.floor(Math.random() * availableCards.length);
   const selectedCard = availableCards[randomIndex];
+  
+  // Добавляем в использованные
   usedCards.push(selectedCard);
+  
   return selectedCard;
 }
 
@@ -320,13 +332,15 @@ function finalArrangement() {
   const finalCardHeight = window.innerWidth >= 600 ? 215 : 195;
   const gap = 10;
 
-  const totalWidth = finalCardWidth * 3 + gap * 2;
+  const totalWidth = finalCardWidth * limit + gap * (limit - 1);
   const startX = viewportCenterX - totalWidth / 2;
 
+  // Сортируем по порядку выбора, а не по индексу в сетке
   selectedIndices.forEach((gridIndex, clickOrder) => {
     const container = containers[gridIndex];
     const rect = container.getBoundingClientRect();
 
+    // clickOrder: 0 = первая кликнутая, 1 = вторая, 2 = третья
     const targetCenterX = startX + finalCardWidth * clickOrder + gap * clickOrder + finalCardWidth / 2;
     const targetCenterY = viewportCenterY;
 
@@ -350,7 +364,7 @@ function finalArrangement() {
 
 function flipCard(cardEl, containerEl, index) {
   if (cardEl.classList.contains('disabled')) return;
-  if (selectedCount === 3) return;
+  if (selectedCount === limit) return;
 
   cardEl.classList.add('disabled');
 
@@ -382,25 +396,25 @@ function flipCard(cardEl, containerEl, index) {
     selectedIndices.push(index);
     selectedCards.push(randomCard);
 
-    if (selectedCount === 3) setTimeout(finalArrangement, 500);
+    if (selectedCount === limit) setTimeout(finalArrangement, 500);
   }, 1700);
 }
 
-decodeButton.addEventListener('click', () => {
-  Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-  console.log('Выбранные карты:', selectedCards);
-  
-  // Отправляем данные обратно в бот
-  Telegram.WebApp.sendData(JSON.stringify({
-    cards: selectedCards,
-    action: 'cards_selected'
-  }));
-  
-  // Закрываем Mini App через небольшую задержку, чтобы данные успели отправиться
-  setTimeout(() => {
-    Telegram.WebApp.close();
-  }, 100);
-});
+decodeButton.addEventListener('click', () => { 
+   Telegram.WebApp.HapticFeedback.impactOccurred('medium'); 
+   console.log('Выбранные карты:', selectedCards); 
+   
+   // Отправляем данные обратно в бот 
+   Telegram.WebApp.sendData(JSON.stringify({ 
+     cards: selectedCards, 
+     action: 'cards_selected' 
+   })); 
+   
+   // Закрываем Mini App через небольшую задержку, чтобы данные успели отправиться
+   setTimeout(() => {
+     Telegram.WebApp.close();
+   }, 100);
+ });
 
 Telegram.WebApp.ready();
 Telegram.WebApp.expand();
