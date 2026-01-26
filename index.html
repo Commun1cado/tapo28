@@ -368,6 +368,11 @@ function flipCard(cardEl, containerEl, index) {
   if (cardEl.classList.contains('disabled')) return;
   if (selectedCount === limit) return;
 
+  // Сразу блокируем повторные клики, если это последняя карта
+  if (selectedCount + 1 === limit) {
+      grid.style.pointerEvents = 'none';
+  }
+  
   cardEl.classList.add('disabled');
 
   const randomCard = getRandomCard();
@@ -394,12 +399,16 @@ function flipCard(cardEl, containerEl, index) {
     containerEl.classList.remove('animate-back');
     cardEl.classList.remove('disabled');
 
-    selectedCount++;
-    selectedIndices.push(index);
-    selectedCards.push(randomCard);
+  selectedCount++;
+  selectedIndices.push(index);
+  selectedCards.push(randomCard);
 
-    if (selectedCount === limit) setTimeout(finalArrangement, 500);
-  }, 1700);
+  // Заглушка: если достигли лимита, блокируем все клики по сетке сразу
+  if (selectedCount === limit) {
+    grid.style.pointerEvents = 'none';
+    setTimeout(finalArrangement, 500);
+  }
+}, 1700);
 }
 
 decodeButton.addEventListener('click', () => { 
