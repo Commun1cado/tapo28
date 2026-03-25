@@ -37,16 +37,16 @@ body {
 }
 
 .final-title {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: bold;
   color: #000;
   text-align: center;
-  width: 90vw;
+  width: 95vw;
   text-shadow: 2px 2px 4px rgba(255,255,255,0.8), 0 0 10px rgba(255,255,255,0.6);
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -140px) translateZ(200px);
+  transform: translate(-50%, -160px) translateZ(200px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 1s ease 0.5s;
@@ -196,7 +196,7 @@ body {
   .grid { max-width: 400px; gap: 15px; }
   .final-placeholder-item { width: 130px; height: 215px; }
   .title, .final-title { font-size: 24px; }
-  .final-title { transform: translate(-50%, -160px) translateZ(200px); }
+  .final-title { transform: translate(-50%, -185px) translateZ(200px); }
   .decode-button { font-size: 32px; padding: 14px 24px; }
 }
 
@@ -347,7 +347,7 @@ function finalArrangement() {
       return cardsMapping[cardKey] || cardKey;
   }).join(', ');
   
-  newTitle.innerText = limit === 1 ? `Ваша карта:\n ${mappedNames}` : `Ваши карты:\n ${mappedNames}`;
+  newTitle.innerText = limit === 1 ? `Ваша карта: ${mappedNames}` : `Ваши карты: ${mappedNames}`;
   newTitle.style.opacity = '1';
 
   containers.forEach((container, index) => {
